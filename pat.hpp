@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "ts_reader.hpp"
+#include "crc.hpp"
 
 
 namespace tssp
@@ -57,6 +58,14 @@ public:
       (*(payload()+ofs+2) << 8) +
        *(payload()+ofs+3);
   }
+
+  bool check_crc32() const {
+    crc32_ts crc_calc;
+    crc_calc.process_bytes(payload()+1, section_length()-1);
+    cout << crc_calc.checksum() << endl;
+    return crc_calc() == crc32();
+  }
+
 private:
   const uint8_t* payload() const {
     return reinterpret_cast<const uint8_t*>(packet_.payload());
