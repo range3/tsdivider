@@ -24,23 +24,23 @@ public:
   {}
 
   size_t length() const {
-    return static_cast<size_t>(head_[0]);
+    return *reinterpret_cast<const uint8_t*>(head_);
   }
 
   uint8_t non_discontinuity_indicator() const {
-    return static_cast<uint8_t>(head_[1] & 0x80);
+    return *reinterpret_cast<const uint8_t*>(head_+1) & 0x80;
   }
 
   uint8_t random_access_indicator() const {
-    return static_cast<uint8_t>(head_[1] & 0x40);
+    return *reinterpret_cast<const uint8_t*>(head_+1) & 0x40;
   }
 
   uint8_t elementary_stream_priority_indicator() const {
-    return static_cast<uint8_t>(head_[1] & 0x20);
+    return *reinterpret_cast<const uint8_t*>(head_+1) & 0x20;
   }
 
   uint8_t flag() const {
-    return static_cast<uint8_t>(head_[1] & 0x1F);
+    return *reinterpret_cast<const uint8_t*>(head_+1) & 0x1F;
   }
 
 private:
@@ -49,6 +49,20 @@ private:
 };
 
 public:
+  void hexdump() const{
+    size_t i;
+    for(i = 0; i < buf_.size(); ++i) {
+      cout
+        << std::setw(2)
+        << std::setfill('0')
+        << std::hex
+        << std::uppercase
+        << (int)*reinterpret_cast<const uint8_t*>(buf_.data()+i)
+        << " ";
+    }
+    cout << endl;
+  }
+
   char* data() {
     return buf_.data();
   }
@@ -60,42 +74,46 @@ public:
   size_t size() const {
     return buf_.size();
   }
+
+  const char* payload() const {
+    return data() + 4; //FIXME: consider adaptation field
+  }
   
   uint8_t synchronization_byte() const {
-    return static_cast<uint8_t>(buf_[0]); // expect to 0x47
+    return *reinterpret_cast<const uint8_t*>(data()); // expect to 0x47
   }
 
   uint8_t transport_error_indicator() const {
-    return static_cast<uint8_t>(buf_[1] & 0x80);
+    return *reinterpret_cast<const uint8_t*>(data()+1) & 0x80;
   }
 
   uint8_t payload_uint_start_indicator() const {
-    return static_cast<uint8_t>(buf_[1] & 0x40);
+    return *reinterpret_cast<const uint8_t*>(data()+1) & 0x40;
   }
 
   uint8_t transport_priority() const {
-    return static_cast<uint8_t>(buf_[1] & 0x20);
+    return *reinterpret_cast<const uint8_t*>(data()+1) & 0x20;
   }
 
   uint16_t pid() const {
     return 
-      static_cast<uint16_t>((buf_[1] & 0x1F) << 8) +
-      static_cast<uint16_t>(buf_[2]);
+      ((*reinterpret_cast<const uint8_t*>(data()+1) & 0x1F) << 8) +
+      *reinterpret_cast<const uint8_t*>(data()+2);
   }
 
   uint8_t transport_scrambling_control() const {
-    return static_cast<uint8_t>((buf_[3] & 0xC0) >> 6);
+    return (*reinterpret_cast<const uint8_t*>(data()+3) & 0xC0) >> 6;
   }
 
   // 01 : payload
   // 10 : adaptation field
   // 11 : adaptation field and payload
   uint8_t adaptation_field_control() const {
-    return static_cast<uint8_t>((buf_[3] & 0x30) >> 4);
+    return (*reinterpret_cast<const uint8_t*>(data()+3) & 0x30) >> 4;
   }
 
   uint8_t continuity_index() const {
-    return static_cast<uint8_t>(buf_[3] & 0x0F);
+    return (*reinterpret_cast<const uint8_t*>(data()+3) & 0x0F);
   }
 
   const adaptation_field_struct adaptation_field() const {
