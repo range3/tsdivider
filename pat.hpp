@@ -4,24 +4,21 @@
 #include <cstdint>
 
 #include "ts_reader.hpp"
+#include "table_header.hpp"
 #include "crc.hpp"
 
 
 namespace tssp
 {
-class pat
+class pat : public table_header<pat>
 {
 public:
   pat(const packet& packet) :
     packet_(packet)
   {}
 
-  uint8_t tid() const {
-    return *(payload()+1);
-  }
-
-  uint16_t section_length() const {
-    return ((*(payload()+2) & 0x0F) << 8) + *(payload()+3);
+  const packet& get_packet() const {
+    return packet_;
   }
 
   uint16_t transport_stream_id() const {
@@ -61,14 +58,9 @@ public:
 
   bool check_crc32() const {
     crc32_ts crc_calc;
-    crc_calc.process_bytes(payload()+1, section_length()-1);
-    cout << crc_calc.checksum() << endl;
+    crc_calc.process_bytes(
+        payload()+1, section_length()-1);
     return crc_calc() == crc32();
-  }
-
-private:
-  const uint8_t* payload() const {
-    return reinterpret_cast<const uint8_t*>(packet_.payload());
   }
 
 private:
