@@ -7,20 +7,35 @@
 
 namespace tssp
 {
-inline
-uint8_t get8(const char* p) {
-  return *reinterpret_cast<const uint8_t*>(p);
 
+inline
+uint8_t get8(const uint8_t* p) {
+  return *p;
 }
 
 inline
-uint16_t get16(const char* p) {
+uint16_t get16(const uint8_t* p) {
   return (get8(p) << 8) | get8(p+1);
 }
 
 inline
-uint32_t get32(const char* p) {
+uint32_t get32(const uint8_t* p) {
   return (get16(p) << 16) | get16(p+2);
+}
+
+inline
+uint8_t get8(const char* p) {
+  return *reinterpret_cast<const uint8_t*>(p);
+}
+
+inline
+uint16_t get16(const char* p) {
+  return get16(reinterpret_cast<const uint8_t*>(p));
+}
+
+inline
+uint32_t get32(const char* p) {
+  return get32(reinterpret_cast<const uint8_t*>(p));
 }
 
 inline
