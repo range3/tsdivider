@@ -1,12 +1,14 @@
 #ifndef _TSSP_CONTEXT_HPP_
 #define _TSSP_CONTEXT_HPP_
 
+#include <iostream>
 #include <memory>
 #include <map>
 #include <string>
 #include "ts_reader.hpp"
 #include "util.hpp"
 #include "crc.hpp"
+#include "pat.hpp"
 
 namespace tssp
 {
@@ -87,7 +89,7 @@ public:
         }
 
         if(crc_valid) {
-          handle_section(c, section_buffer_);
+          handle_section(c, section_buffer_.data(), section_length);
         }
       }
     }
@@ -96,16 +98,28 @@ public:
 protected:
   void handle_section(
       context& c,
-      const std::string& section_buffer) {
+      const char* section_buffer,
+      size_t section_length) {
     //DEBUG
     cerr << "-----section dump-----" << endl;
-    tssp::hexdump(section_buffer.data(), section_buffer.size(), std::cerr);
-    do_handle_section(c, section_buffer);
+    tssp::hexdump(section_buffer, section_length, std::cerr);
+    do_handle_section(c, section_buffer, section_length);
   }
 
   virtual void do_handle_section(
       context& c,
-      const std::string& section_buffer) {}
+      const char* section_buffer,
+      size_t section_length) {}
+
+
+  // DEBUG
+  void dump_section_header(const section_header& sh) const {
+    cerr << "table id : " << (int)sh.table_id << endl;
+    cerr << "tranport stream id : " << (int)sh.transport_stream_id << endl;
+    cerr << "version : " << (int)sh.version << endl;
+    cerr << "section number : " << (int)sh.section_number << endl;
+    cerr << "last section number : " << (int)sh.last_section_number << endl;
+  }
 
 protected:
   std::string section_buffer_;
@@ -119,6 +133,27 @@ public:
     section_filter(true)
   {}
   virtual ~pat_section_filter() {}
+
+protected:
+  virtual void do_handle_section(
+      context& c,
+      const char* section_buffer,
+      size_t section_length) {
+    program_association_table pat;
+    pat.unpack(section_buffer, section_length);
+
+    //DEBUG
+    cerr << "----- pat -----" << endl;
+    dump_section_header(pat);
+    {
+      cerr << "program number | pmt pid" << endl;
+      auto i = pat.program_num_to_pid.begin();
+      auto i_end = pat.program_num_to_pid.end();
+      for(; i != i_end; ++i) {
+        cerr << (int)i->first << " | " << (int)i->second << endl;
+      }
+    }
+  }
 };
 
 class context
