@@ -2,11 +2,12 @@
 #define _TSSP_TS_READER_HPP_
 
 #include <iostream>
-#include <iomanip>
 #include <istream>
 #include <array>
 #include <cstdint>
 #include <stdexcept>
+
+#include "util.hpp"
 
 
 namespace tssp
@@ -54,19 +55,7 @@ private:
 
 public:
   void hexdump() const{
-    size_t i;
-    for(i = 0; i < buf_.size(); ++i) {
-      cerr
-        << std::setw(2)
-        << std::setfill('0')
-        << std::hex
-        << std::uppercase
-        << (int)*reinterpret_cast<const uint8_t*>(buf_.data()+i)
-        << " ";
-      if(i % 16 == 15)
-        cerr << endl;
-    }
-    cerr << endl;
+    tssp::hexdump(buf_.data(), buf_.size(), std::cerr);
   }
 
   char* data() {
