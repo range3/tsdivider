@@ -4,11 +4,13 @@
 #include <istream>
 #include <array>
 #include <cstdint>
+#include <stdexcept>
 
 
 namespace tssp
 {
 const size_t PACKET_SIZE = 188;
+const size_t MAX_RESYNC_SIZE = 0xFFFF;
 
 class packet
 {
@@ -59,6 +61,8 @@ public:
         << std::uppercase
         << (int)*reinterpret_cast<const uint8_t*>(buf_.data()+i)
         << " ";
+      if(i % 16 == 15)
+        cout << endl;
     }
     cout << endl;
   }
@@ -79,7 +83,7 @@ public:
     return data() + 4; //FIXME: consider adaptation field
   }
   
-  uint8_t synchronization_byte() const {
+  uint8_t sync_byte() const {
     return *reinterpret_cast<const uint8_t*>(data()); // expect to 0x47
   }
 
@@ -127,9 +131,46 @@ public:
   tsreader(std::istream& input) : input_(input) {}
 
   bool next(packet& result) {
-    input_.exceptions(std::istream::badbit);
-    input_.read(result.data(), result.size());
-    return input_;
+    while(true) {
+      input_.exceptions(std::istream::badbit);
+      input_.read(result.data(), result.size());
+      if(!input_)
+        return false;
+
+      // check packet sync byte
+      if(result.sync_byte() != 0x47) {
+        input_.exceptions(std::istream::failbit | std::istream::badbit);
+        auto pos = input_.tellg();
+        input_.seekg(
+            -std::min<decltype(pos)>(pos, PACKET_SIZE),
+            std::ios_base::cur);
+        if(!resync())
+          return false;
+      }
+      else {
+        break;
+      }
+    }
+    return true;
+  }
+
+private:
+  bool resync() {
+    char ch;
+    const uint8_t* c = reinterpret_cast<uint8_t*>(&ch);
+    size_t i;
+    for(i = 0; i < MAX_RESYNC_SIZE; ++i) {
+      input_.exceptions(std::istream::badbit);
+      input_.get(ch);
+      if(!input_)
+        return false;
+      if(*c == 0x47) {
+        input_.exceptions(std::istream::failbit | std::istream::badbit);
+        input_.seekg(-1, std::ios_base::cur);
+        return true;
+      }
+    }
+    throw std::runtime_error("invalid data. cannot find 0x47 sync byte");
   }
 
 private:
