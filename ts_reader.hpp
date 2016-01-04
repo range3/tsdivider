@@ -79,6 +79,10 @@ public:
     return buf_.size();
   }
 
+  const char* end() const {
+    return buf_.data() + buf_.size();
+  }
+
   const char* payload() const {
     return data() + 4; //FIXME: consider adaptation field
   }
@@ -116,6 +120,14 @@ public:
     return (*reinterpret_cast<const uint8_t*>(data()+3) & 0x30) >> 4;
   }
 
+  bool has_payload() const {
+    return adaptation_field_control() & 1;
+  }
+
+  bool has_adaptation_field() const {
+    return adaptation_field_control() & 2;
+  }
+
   uint8_t continuity_index() const {
     return (*reinterpret_cast<const uint8_t*>(data()+3) & 0x0F);
   }
@@ -123,6 +135,11 @@ public:
   const adaptation_field_struct adaptation_field() const {
     return adaptation_field_struct(*this);
   }
+
+  uint8_t pointer_field() const {
+    return *reinterpret_cast<const uint8_t*>(payload());
+  }
+
 };
 
 class tsreader
