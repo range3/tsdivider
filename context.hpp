@@ -5,6 +5,8 @@
 #include <map>
 #include <string>
 #include "ts_reader.hpp"
+#include "util.hpp"
+#include "crc.hpp"
 
 namespace tssp
 {
@@ -39,13 +41,20 @@ class section_filter : public filter
 {
 public:
   section_filter() :
-    filter()
+    filter(),
+    do_crc_check_(false)
+  {}
+  section_filter(
+      bool do_crc_check) :
+    filter(),
+    do_crc_check_(do_crc_check)
   {}
 
   virtual ~section_filter() {}
   virtual bool is_section_filter() const {
     return true;
   }
+
   virtual void write_section_data(
       context& c,
       const char* data,
@@ -58,14 +67,57 @@ public:
       section_buffer_.append(data, size);
     }
 
+    if(section_buffer_.size() >= 3) {
+      uint16_t section_length =
+        (get16(section_buffer_.data()+1) & 0x0FFF) + 3;
+      if(section_length > 4096) {
+        return; //too long
+      }
+      if(section_buffer_.size() >= section_length) {
+        bool crc_valid = true;
+        if(do_crc_check_) {
+          if(section_length < 4)
+            return;
+          uint32_t crc32 = get32(section_buffer_.data()+section_length-4);
+          crc32_ts crc_calc;
+          crc_calc.process_bytes(
+              section_buffer_.data(),
+              section_length-4);
+          crc_valid = (crc32 == crc_calc());
+        }
+
+        if(crc_valid) {
+          handle_section(c, section_buffer_);
+        }
+      }
+    }
   }
+
+protected:
+  void handle_section(
+      context& c,
+      const std::string& section_buffer) {
+    //DEBUG
+    cerr << "-----section dump-----" << endl;
+    tssp::hexdump(section_buffer.data(), section_buffer.size(), std::cerr);
+    do_handle_section(c, section_buffer);
+  }
+
+  virtual void do_handle_section(
+      context& c,
+      const std::string& section_buffer) {}
+
 protected:
   std::string section_buffer_;
+  bool do_crc_check_;
 };
 
 class pat_section_filter : public section_filter
 {
 public:
+  pat_section_filter() :
+    section_filter(true)
+  {}
   virtual ~pat_section_filter() {}
 };
 
