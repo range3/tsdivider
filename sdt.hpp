@@ -3,7 +3,7 @@
 
 #include "section_header.hpp"
 #include "util.hpp"
-#include "pmt.hpp" //FIXME: for descriptor
+#include "descriptor.hpp"
 
 namespace tssp
 {
