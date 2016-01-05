@@ -18,8 +18,11 @@ class context
 public:
   context() {
     open_section_filter(
-        0, std::unique_ptr<section_filter>(
+        0x0000, std::unique_ptr<section_filter>(
           new pat_section_filter()));
+    open_section_filter(
+        0x0014, std::unique_ptr<section_filter>(
+          new tot_section_filter()));
   }
 
   void handle_packet(const packet& p) {
@@ -32,8 +35,10 @@ public:
     auto& f = i_filter->second;
 
     // DEBUG: hexdump
-    cerr << "-----PID " << p.pid() << "-----" << endl;
-    p.hexdump();
+    //if(p.pid() == 0x0014) {
+    //  cerr << "-----PID " << p.pid() << "-----" << endl;
+    //  p.hexdump();
+    //}
 
     // checking continuity
     uint8_t expect_ci = p.has_payload() ? (f->last_ci()+1) & 0x0f : f->last_ci();
@@ -60,14 +65,11 @@ public:
 
         pp += pf;
         if(pp < p.end()) {
-          cerr << "aa" << endl;
           f->write_section_data(*this, pp, p.end() - pp, true);
         }
       }
       else {
-        cerr << "bb" << endl;
         if(ci_ok) {
-          cerr << "cc" << endl;
           f->write_section_data(*this, pp, p.end() - pp, false);
         }
       }

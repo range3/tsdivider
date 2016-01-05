@@ -12,14 +12,14 @@ void pat_section_filter::do_handle_section(
   pat.unpack(section_buffer, section_length);
 
   //DEBUG
-  cerr << "----- pat -----" << endl;
-  dump_section_header(pat.header);
+  //cerr << "----- pat -----" << endl;
+  //dump_section_header(pat.header);
   {
-    cerr << "program number | pmt pid" << endl;
+  //  cerr << "program number | pmt pid" << endl;
     auto i = pat.program_num_to_pid.begin();
     auto i_end = pat.program_num_to_pid.end();
     for(; i != i_end; ++i) {
-      cerr << (int)i->first << " | " << (int)i->second << endl;
+  //    cerr << (int)i->first << " | " << (int)i->second << endl;
       if(i->first != 0) {
         if(!c.is_opened(i->second)) {
           c.open_section_filter(

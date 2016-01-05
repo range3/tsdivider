@@ -69,8 +69,8 @@ protected:
       const char* section_buffer,
       size_t section_length) {
     //DEBUG
-    cerr << "-----section dump-----" << endl;
-    tssp::hexdump(section_buffer, section_length, std::cerr);
+    //cerr << "-----section dump-----" << endl;
+    //tssp::hexdump(section_buffer, section_length, std::cerr);
     do_handle_section(c, section_buffer, section_length);
   }
 
