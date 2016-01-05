@@ -21,6 +21,9 @@ public:
         0x0000, std::unique_ptr<section_filter>(
           new pat_section_filter()));
     open_section_filter(
+        0x0011, std::unique_ptr<section_filter>(
+          new sdt_section_filter()));
+    open_section_filter(
         0x0014, std::unique_ptr<section_filter>(
           new tot_section_filter()));
   }
