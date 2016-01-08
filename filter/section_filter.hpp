@@ -79,16 +79,6 @@ protected:
       const char* section_buffer,
       size_t section_length) {}
 
-
-  // DEBUG
-  void dump_section_header(const section_header& sh) const {
-    cerr << "table id : " << (int)sh.table_id << endl;
-    cerr << "tranport stream id : " << (int)sh.transport_stream_id << endl;
-    cerr << "version : " << (int)sh.version << endl;
-    cerr << "section number : " << (int)sh.section_number << endl;
-    cerr << "last section number : " << (int)sh.last_section_number << endl;
-  }
-
 protected:
   std::string section_buffer_;
   bool do_crc_check_;
