@@ -3,10 +3,12 @@
 
 namespace tssp
 {
-struct descriptor_header
+
+struct descriptor
 {
   uint8_t tag;
   uint8_t length;
+  const uint8_t* pdata;
 
   void unpack(const uint8_t** pp, const uint8_t* pend) {
     const uint8_t* p = *pp;
@@ -17,18 +19,23 @@ struct descriptor_header
     p += 1;
     length = get8(p);
     p += 1;
+    pdata = p;
+    p += length;
 
     *pp = p;
   }
-};
 
-struct descriptor
-{
-  descriptor_header header;
+  template<typename T>
+  std::unique_ptr<T> as() const {
+    std::unique_ptr<T> d(new T);
+    convert(*d);
+    return std::move(d);
+  }
 
-  void unpack(const uint8_t** pp, const uint8_t* pend) {
-    header.unpack(pp, pend);
-    *pp += header.length; //FIXME
+  template<typename T>
+  void convert(T& t) const {
+    const uint8_t* p = pdata;
+    t.unpack(&p, p+length);
   }
 };
 

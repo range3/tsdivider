@@ -1,17 +1,45 @@
-cmake_minimum_required (VERSION 3.0)
-project (tssplitter_plus)
+cmake_minimum_required(VERSION 3.0)
+project(tssplitter_plus)
+set(serial "0.1.0")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/")
 
 # C++11
 set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O2")
-set(CMAKE_CXX_FLAGS_DEBUG   "-g")
 
 # Boost
 find_package(Boost 1.60.0 REQUIRED COMPONENTS program_options)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif(Boost_FOUND)
 
-add_executable(tssplitter_plus tssplitter_plus.cpp)
+# iconv
+find_package(Iconv REQUIRED)
+if(ICONV_FOUND)
+  include_directories(${ICONV_INCLUDE_DIR})
+  set(HAVE_ICONV_H 1)
+  set(ICONV_REQUIRES_CONST ${ICONV_SECOND_ARGUMENT_IS_CONST})
+endif(ICONV_FOUND)
+
+configure_file(
+  ${CMAKE_SOURCE_DIR}/config.h.in
+  ${CMAKE_SOURCE_DIR}/config.h
+)
+
 include_directories(
   ./
-  ${Boost_INCLUDE_DIRS}
 )
-target_link_libraries(tssplitter_plus ${Boost_LIBRARIES})
+
+add_executable(
+  tssplitter_plus
+  tssplitter_plus.cpp
+  aribstr.c
+)
+
+target_link_libraries(
+  tssplitter_plus
+  ${Boost_LIBRARIES}
+  ${ICONV_LIBRARIES}
+)
+
+install(TARGETS tssplitter_plus RUNTIME DESTINATION "bin")
