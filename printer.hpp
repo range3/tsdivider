@@ -70,6 +70,29 @@ void printer<T>::print_debug(const T& data){}
 
 template<>
 inline
+void printer<program_association_table>::print_json(
+    const program_association_table& pat,
+    bool prettify) {
+  picojson::value root = serialize_section_header(pat.header);
+  picojson::object& o = root.get<picojson::object>();
+  picojson::array program_num_to_pid;
+
+  for(auto& kv : pat.program_num_to_pid) {
+    picojson::object program_to_pid_obj;
+    program_to_pid_obj.emplace("program", picojson::value(d(kv.first)));
+    program_to_pid_obj.emplace("pid", picojson::value(d(kv.second)));
+    program_num_to_pid.emplace_back(picojson::value(program_to_pid_obj));
+  }
+
+  o.emplace(
+      "program_to_pid",
+      picojson::value(program_num_to_pid));
+
+  ost_ << root.serialize(prettify) << endl;
+}
+
+template<>
+inline
 void printer<service_description_table>::print_json(
     const service_description_table& data,
     bool prettify) {
