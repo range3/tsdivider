@@ -14,17 +14,19 @@ struct service_description_table
   struct service
   {
     uint16_t service_id;
-    std::vector<std::unique_ptr<descriptor> > descriptors;
+    std::vector<descriptor> descriptors;
   };
 
   // Table ID 0x42 (self stream) 0x46 (other stream)
   section_header header;
   uint16_t original_network_id;
-  std::vector<std::unique_ptr<service> > services;
+  std::vector<service> services;
 
   void unpack(const char* data, size_t size) {
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
     const uint8_t* pend = p+size;
+
+    services.clear();
 
     header.unpack(&p, pend);
 
@@ -32,8 +34,10 @@ struct service_description_table
     p += 3;
 
     while(pend - p > 4) {
-      std::unique_ptr<service> s(new service);
-      s->service_id = get16(p);
+      services.resize(services.size()+1);
+      auto& s = services.back();
+
+      s.service_id = get16(p);
       p += 3;
       size_t loop_length = get16(p) & 0x0FFF;
       p += 2;
@@ -42,12 +46,9 @@ struct service_description_table
         std::runtime_error("");
 
       while(p < ploop_end) {
-        std::unique_ptr<descriptor> d(new descriptor);
-        d->unpack(&p, ploop_end);
-        s->descriptors.push_back(std::move(d));
+        s.descriptors.resize(s.descriptors.size()+1);
+        s.descriptors.back().unpack(&p, ploop_end);
       }
-
-      services.push_back(std::move(s));
     }
   }
 };

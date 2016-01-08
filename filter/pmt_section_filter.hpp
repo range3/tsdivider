@@ -25,7 +25,7 @@ protected:
 
     //cerr << "----- pmt -----" << endl;
     //dump_section_header(pmt.header);
-    //cerr << "pcr_pid : " << (int)pmt.pcr_pid << endl;
+    cerr << "pcr_pid : " << (int)pmt.pcr_pid << endl;
     //cerr << "program_info(descriptor)" << endl;
     //{
     //  for(auto& i : pmt.program_info) {

@@ -35,12 +35,12 @@ protected:
     dump_section_header(sdt.header);
     cerr << "services : " << endl;
     for(auto& s : sdt.services) {
-      cerr << "\t" << "service_id : " << (int)s->service_id << endl;
-      for(auto& d : s->descriptors) {
-        cerr << "\t\t" << "tag : " << (int)d->tag << endl;
-        cerr << "\t\t" << "length : " << (int)d->length << endl;
-        if(d->tag == service_descriptor::TAG) {
-          auto sd = d->as<service_descriptor>();
+      cerr << "\t" << "service_id : " << (int)s.service_id << endl;
+      for(auto& d : s.descriptors) {
+        cerr << "\t\t" << "tag : " << (int)d.tag << endl;
+        cerr << "\t\t" << "length : " << (int)d.length << endl;
+        if(d.tag == service_descriptor::TAG) {
+          auto sd = d.as<service_descriptor>();
           cerr << "\t\t" << "service_type: " << (int)sd->service_type << endl;
           AribToString(
               tmpbuf,

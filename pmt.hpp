@@ -14,7 +14,7 @@ struct program_element
 {
   uint8_t stream_type;
   uint16_t elementary_pid;
-  std::vector<std::unique_ptr<descriptor> > es_info;
+  std::vector<descriptor> es_info;
 
   void unpack(const uint8_t** pp, const uint8_t* pend) {
     const uint8_t* p = *pp;
@@ -30,8 +30,8 @@ struct program_element
     const uint8_t* peiend = p + es_info_length;
     es_info.clear();
     while(peiend - p >= 2) {
-      es_info.emplace_back(new descriptor);
-      es_info.back()->unpack(&p, pend);
+      es_info.resize(es_info.size()+1);
+      es_info.back().unpack(&p, pend);
     }
     p = peiend;
     *pp = p;
@@ -42,9 +42,8 @@ struct program_map_table
 {
   section_header header;
   uint16_t pcr_pid;
-  std::vector<std::unique_ptr<descriptor> > program_info;
-  std::vector<std::unique_ptr<program_element> > program_elements;
-
+  std::vector<descriptor> program_info;
+  std::vector<program_element> program_elements;
 
 public:
   void unpack(const char* data, size_t size) {
@@ -60,15 +59,15 @@ public:
     const uint8_t* piend = p + program_info_length;
     program_info.clear();
     while(piend - p >= 2) {
-      program_info.emplace_back(new descriptor);
-      program_info.back()->unpack(&p, pend);
+      program_info.resize(program_info.size()+1);
+      program_info.back().unpack(&p, pend);
     }
     p = piend;
 
     program_elements.clear();
     while(pend - p >= 5+4) {
-      program_elements.emplace_back(new program_element);
-      program_elements.back()->unpack(&p, pend);
+      program_elements.resize(program_elements.size()+1);
+      program_elements.back().unpack(&p, pend);
     }
   }
 
