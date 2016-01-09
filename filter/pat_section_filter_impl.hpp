@@ -1,7 +1,9 @@
 #ifndef _TSSP_PAT_SECTION_FILTER_IMPL_HPP_
 #define _TSSP_PAT_SECTION_FILTER_IMPL_HPP_
 
-#include "printer.hpp"
+#include "context.hpp"
+#include "pat.hpp"
+#include "filter/pmt_section_filter.hpp"
 
 namespace tssp
 {
@@ -13,12 +15,8 @@ void pat_section_filter::do_handle_section(
   program_association_table pat;
   pat.unpack(section_buffer, section_length);
 
-  printer<program_association_table> pri(std::cout);
-  pri.print_json(pat, false);
+  c.get_view().print(pat);
 
-  //DEBUG
-  //cerr << "----- pat -----" << endl;
-  //dump_section_header(pat.header);
   {
     auto i = pat.program_num_to_pid.begin();
     auto i_end = pat.program_num_to_pid.end();

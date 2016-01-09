@@ -1,10 +1,6 @@
 #ifndef _TSSP_SDT_SECTION_FILTER_HPP_
 #define _TSSP_SDT_SECTION_FILTER_HPP_
 
-#include "sdt.hpp"
-#include "aribstr.h"
-#include "printer.hpp"
-
 namespace tssp
 {
 class context;
@@ -24,20 +20,11 @@ protected:
   virtual void do_handle_section(
       context& c,
       const char* section_buffer,
-      size_t section_length) {
-    service_description_table sdt;
-    sdt.unpack(section_buffer, section_length);
-
-    printer<service_description_table> pri(std::cout);
-    pri.print_json(sdt, false);
-
-    //cerr << "----- sdt section -----" << endl;
-    //cerr << "dump : " << endl;
-    //tssp::hexdump(section_buffer, section_length, std::cerr);
-    //pri.print_debug(sdt);
-  }
+      size_t section_length);
 };
 
 }
+
+#include "filter/sdt_section_filter_impl.hpp"
 
 #endif

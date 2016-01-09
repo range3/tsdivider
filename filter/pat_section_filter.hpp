@@ -1,7 +1,6 @@
 #ifndef _TSSP_PAT_SECTION_FILTER_HPP_
 #define _TSSP_PAT_SECTION_FILTER_HPP_
 
-#include "pat.hpp"
 
 namespace tssp
 {
@@ -23,5 +22,7 @@ protected:
 };
 
 }
+
+#include "filter/pat_section_filter_impl.hpp"
 
 #endif
