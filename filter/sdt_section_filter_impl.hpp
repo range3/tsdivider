@@ -14,7 +14,11 @@ void sdt_section_filter::do_handle_section(
   service_description_table sdt;
   sdt.unpack(section_buffer, section_length);
 
-  c.get_view().print(sdt);
+  c.get_view().print(
+      sdt,
+      last_version_ != sdt.header.version);
+
+  last_version_ = sdt.header.version;
 }
 
 }

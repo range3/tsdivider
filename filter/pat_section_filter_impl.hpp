@@ -15,7 +15,9 @@ void pat_section_filter::do_handle_section(
   program_association_table pat;
   pat.unpack(section_buffer, section_length);
 
-  c.get_view().print(pat);
+  c.get_view().print(
+      pat,
+      last_version_ != pat.header.version);
 
   {
     auto i = pat.program_num_to_pid.begin();
@@ -30,6 +32,8 @@ void pat_section_filter::do_handle_section(
       }
     }
   }
+
+  last_version_ = pat.header.version;
 }
 
 }

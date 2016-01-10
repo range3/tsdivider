@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
     ("sdt", "print sdt")
     ("tot", "print tot")
     ("all", "print all information")
+    ("print_if_changed", "print information if section version changed")
   ;
 
   po::variables_map vm;
@@ -67,6 +68,7 @@ int main(int argc, char* argv[]) {
   view->set_print_pmt(vm.count("pmt"));
   view->set_print_sdt(vm.count("sdt"));
   view->set_print_tot(vm.count("tot"));
+  view->set_print_if_changed(vm.count("print_if_changed"));
 
   try {
     std::ifstream input(

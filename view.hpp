@@ -24,7 +24,8 @@ public:
     print_pat_(false),
     print_pmt_(false),
     print_sdt_(false),
-    print_tot_(false)
+    print_tot_(false),
+    print_if_changed_(false)
   {}
 
   virtual ~view() {}
@@ -41,35 +42,55 @@ public:
   void set_print_tot(bool p) {
     print_tot_ = p;
   }
+  void set_print_if_changed(bool p) {
+    print_if_changed_ = p;
+  }
 
-  void print(const program_association_table& pat) {
+  void print(
+      const program_association_table& pat,
+      bool changed = true) const {
+    if(print_if_changed_ && !changed)
+      return;
     if(print_pat_)
       on_print(pat);
   }
-  void print(const program_map_table& pmt) {
+  void print(
+      const program_map_table& pmt,
+      bool changed = true) const {
+    if(print_if_changed_ && !changed)
+      return;
     if(print_pmt_)
       on_print(pmt);
   }
-  void print(const service_description_table& sdt) {
+  void print(
+      const service_description_table& sdt,
+      bool changed = true) const {
+    if(print_if_changed_ && !changed)
+      return;
     if(print_sdt_)
       on_print(sdt);
   }
-  void print(const time_offset_table& tot) {
+  void print(
+      const time_offset_table& tot,
+      bool changed = true) const {
+    if(print_if_changed_ && !changed)
+      return;
     if(print_tot_)
       on_print(tot);
   }
 
 protected:
-  virtual void on_print(const program_association_table& pat) {}
-  virtual void on_print(const program_map_table& pmt) {}
-  virtual void on_print(const service_description_table& sdt) {}
-  virtual void on_print(const time_offset_table& tot) {}
+  virtual void on_print(const program_association_table& pat) const {}
+  virtual void on_print(const program_map_table& pmt) const {}
+  virtual void on_print(const service_description_table& sdt) const {}
+  virtual void on_print(const time_offset_table& tot) const {}
 
 protected:
   bool print_pat_;
   bool print_pmt_;
   bool print_sdt_;
   bool print_tot_;
+  bool print_if_changed_;
 };
 
 
@@ -83,7 +104,7 @@ public:
   virtual ~json_view() {}
 
 protected:
-  virtual void on_print(const program_association_table& pat) {
+  virtual void on_print(const program_association_table& pat) const {
     picojson::value root = serialize_section_header(pat.header);
     picojson::object& o = root.get<picojson::object>();
     picojson::array program_num_to_pid;
@@ -102,7 +123,7 @@ protected:
     cout << root.serialize(prettify_) << endl;
   }
 
-  virtual void on_print(const program_map_table& pmt) {
+  virtual void on_print(const program_map_table& pmt) const {
     picojson::value root = serialize_section_header(pmt.header);
     picojson::object& o = root.get<picojson::object>();
     o.emplace(
@@ -136,7 +157,7 @@ protected:
     cout << root.serialize(prettify_) << endl;
   }
 
-  virtual void on_print(const service_description_table& sdt) {
+  virtual void on_print(const service_description_table& sdt) const {
     char tmpbuf[4096];
     picojson::value root = serialize_section_header(sdt.header);
     picojson::object& o = root.get<picojson::object>();
@@ -174,7 +195,7 @@ protected:
     cout << root.serialize(prettify_) << endl;
   }
 
-  virtual void on_print(const time_offset_table& tot) {
+  virtual void on_print(const time_offset_table& tot) const {
     picojson::object o;
     o.emplace("tid", picojson::value(d(tot.table_id)));
     time_t t = std::chrono::system_clock::to_time_t(tot.time());
@@ -218,7 +239,7 @@ public:
   virtual ~debug_view() {}
 
 protected:
-  virtual void on_print(const program_association_table& pat) {
+  virtual void on_print(const program_association_table& pat) const {
     cout << "----- pat -----" << endl;
     dump_section_header(pat.header);
     for(auto& kv : pat.program_num_to_pid) {
@@ -227,7 +248,7 @@ protected:
     }
   }
 
-  virtual void on_print(const program_map_table& pmt) {
+  virtual void on_print(const program_map_table& pmt) const {
     cout << "----- pmt -----" << endl;
     dump_section_header(pmt.header);
     cout << "pcr_pid : " << (int)pmt.pcr_pid << endl;
@@ -252,7 +273,7 @@ protected:
     }
   }
 
-  virtual void on_print(const service_description_table& sdt) {
+  virtual void on_print(const service_description_table& sdt) const {
     cout << "----SDT sectoin----" << endl;
     char tmpbuf[4096];
     cout << "header : " << endl;
@@ -281,7 +302,7 @@ protected:
     }
   }
 
-  virtual void on_print(const time_offset_table& tot) {
+  virtual void on_print(const time_offset_table& tot) const {
     cout << "----- tot section -----" << endl;
     cout << "table id : " << (int)tot.table_id << endl;
     cout << dec;

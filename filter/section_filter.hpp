@@ -12,7 +12,8 @@ class section_filter : public filter
 public:
   section_filter() :
     filter(),
-    do_crc_check_(false)
+    do_crc_check_(false),
+    last_version_(-1)
   {}
   section_filter(
       bool do_crc_check) :
@@ -82,6 +83,7 @@ protected:
 protected:
   std::string section_buffer_;
   bool do_crc_check_;
+  int last_version_;
 };
 }
 

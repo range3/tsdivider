@@ -14,7 +14,10 @@ void pmt_section_filter::do_handle_section(
   program_map_table pmt;
   pmt.unpack(section_buffer, section_length);
 
-  c.get_view().print(pmt);
+  c.get_view().print(pmt,
+      last_version_ != pmt.header.version);
+
+  last_version_ = pmt.header.version;
 }
 
 }
