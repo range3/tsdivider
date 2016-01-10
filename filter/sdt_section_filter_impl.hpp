@@ -15,6 +15,7 @@ void sdt_section_filter::do_handle_section(
   sdt.unpack(section_buffer, section_length);
 
   c.get_view().print(
+      c.get_packet_num(),
       sdt,
       last_version_ != sdt.header.version);
 

@@ -16,6 +16,7 @@ void pat_section_filter::do_handle_section(
   pat.unpack(section_buffer, section_length);
 
   c.get_view().print(
+      c.get_packet_num(),
       pat,
       last_version_ != pat.header.version);
 

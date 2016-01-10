@@ -15,7 +15,9 @@ void tot_section_filter::do_handle_section(
   time_offset_table tot;
   tot.unpack(section_buffer, section_length);
 
-  c.get_view().print(tot);
+  c.get_view().print(
+      c.get_packet_num(),
+      tot);
 }
 
 }

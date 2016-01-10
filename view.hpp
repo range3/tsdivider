@@ -25,7 +25,8 @@ public:
     print_pmt_(false),
     print_sdt_(false),
     print_tot_(false),
-    print_if_changed_(false)
+    print_if_changed_(false),
+    print_packet_num_(false)
   {}
 
   virtual ~view() {}
@@ -45,41 +46,66 @@ public:
   void set_print_if_changed(bool p) {
     print_if_changed_ = p;
   }
+  void set_print_packet_num(bool p) {
+    print_packet_num_ = p;
+  }
 
   void print(
+      uint64_t packet_num,
       const program_association_table& pat,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
-    if(print_pat_)
+    if(print_pat_) {
+      print_packet_num(packet_num);
       on_print(pat);
+    }
   }
   void print(
+      uint64_t packet_num,
       const program_map_table& pmt,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
-    if(print_pmt_)
+    if(print_pmt_) {
+      print_packet_num(packet_num);
       on_print(pmt);
+    }
   }
   void print(
+      uint64_t packet_num,
       const service_description_table& sdt,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
-    if(print_sdt_)
+    if(print_sdt_) {
+      print_packet_num(packet_num);
       on_print(sdt);
+    }
   }
   void print(
+      uint64_t packet_num,
       const time_offset_table& tot,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
-    if(print_tot_)
+    if(print_tot_) {
+      print_packet_num(packet_num);
       on_print(tot);
+    }
+  }
+
+private:
+  void print_packet_num(uint64_t n) const {
+    if(print_packet_num_)
+      on_print_packet_num(n);
   }
 
 protected:
+  virtual void on_print_packet_num(uint64_t n) const {
+    cout << std::dec << n << "\t";
+  }
+
   virtual void on_print(const program_association_table& pat) const {}
   virtual void on_print(const program_map_table& pmt) const {}
   virtual void on_print(const service_description_table& sdt) const {}
@@ -91,6 +117,7 @@ protected:
   bool print_sdt_;
   bool print_tot_;
   bool print_if_changed_;
+  bool print_packet_num_;
 };
 
 

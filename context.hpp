@@ -31,12 +31,18 @@ public:
 
   view& get_view();
 
+  uint64_t get_packet_num() const {
+    return packet_counter_;
+  }
+
 private:
   std::map<
     uint16_t,
     std::unique_ptr<filter> > pids_;
 
   std::unique_ptr<view> view_;
+
+  uint64_t packet_counter_;
 };
 
 }

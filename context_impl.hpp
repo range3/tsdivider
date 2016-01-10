@@ -6,7 +6,8 @@
 namespace tssp {
 
 context::context(std::unique_ptr<view> view) :
-  view_(std::move(view))
+  view_(std::move(view)),
+  packet_counter_(0)
 {
   open_section_filter(
       0x0000, std::unique_ptr<section_filter>(
@@ -21,7 +22,7 @@ context::context(std::unique_ptr<view> view) :
 
 inline
 void context::handle_packet(const packet& p) {
-
+  packet_counter_ += 1;
   auto i_filter = pids_.find(p.pid());
   if(i_filter == pids_.end())
     return;
