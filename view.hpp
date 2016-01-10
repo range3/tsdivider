@@ -103,6 +103,37 @@ protected:
   }
 
   virtual void on_print(const program_map_table& pmt) {
+    picojson::value root = serialize_section_header(pmt.header);
+    picojson::object& o = root.get<picojson::object>();
+    o.emplace(
+        "pcr_pid",
+        picojson::value(d(pmt.pcr_pid)));
+
+    picojson::array program_info;
+    for(auto& pi : pmt.program_info) {
+      picojson::object pio;
+      pio.emplace("tag", picojson::value(d(pi.tag)));
+      program_info.emplace_back(picojson::value(pio));
+    }
+    o.emplace("program_info", picojson::value(program_info));
+
+    picojson::array program_elements;
+    for(auto& pe : pmt.program_elements) {
+      picojson::object peo;
+      peo.emplace("type", picojson::value(d(pe.stream_type)));
+      peo.emplace("pid", picojson::value(d(pe.elementary_pid)));
+      picojson::array es_info;
+      for(auto& desc : pe.es_info) {
+        picojson::object es_info_o;
+        es_info_o.emplace("tag", picojson::value(d(desc.tag)));
+        es_info.emplace_back(picojson::value(es_info_o));
+      }
+      peo.emplace("es_info", picojson::value(es_info));
+      program_elements.emplace_back(picojson::value(peo));
+    }
+    o.emplace("program_elements", picojson::value(program_elements));
+
+    cout << root.serialize(prettify_) << endl;
   }
 
   virtual void on_print(const service_description_table& sdt) {
