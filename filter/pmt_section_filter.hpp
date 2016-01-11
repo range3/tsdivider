@@ -9,7 +9,8 @@ class pmt_section_filter : public section_filter
 {
 public:
   pmt_section_filter() :
-    section_filter(true)
+    section_filter(true),
+    last_version_(-1)
   {}
   virtual ~pmt_section_filter() {}
 
@@ -18,6 +19,9 @@ protected:
       context& c,
       const char* section_buffer,
       size_t section_length);
+
+private:
+  int last_version_;
 };
 
 }

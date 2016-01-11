@@ -21,6 +21,17 @@ protected:
       context& c,
       const char* section_buffer,
       size_t section_length);
+
+private:
+  bool is_changed(uint16_t tsid, uint8_t ver) {
+    auto i = tsid_to_last_version_.find(tsid);
+    return
+      i == tsid_to_last_version_.end() ||
+      i->second != ver;
+  }
+
+private:
+  std::map<uint16_t, int> tsid_to_last_version_;
 };
 
 }
