@@ -225,7 +225,7 @@ protected:
   virtual void on_print(const time_offset_table& tot) const {
     picojson::object o;
     o.emplace("tid", picojson::value(d(tot.table_id)));
-    time_t t = std::chrono::system_clock::to_time_t(tot.time());
+    time_t t = tot.time.to_time_t();
     char tmpbuf[100];
     std::strftime(tmpbuf, sizeof(tmpbuf), "%c %Z", std::localtime(&t));
     o.emplace("time", picojson::value(tmpbuf));
@@ -333,7 +333,7 @@ protected:
     cout << "----- tot section -----" << endl;
     cout << "table id : " << (int)tot.table_id << endl;
     cout << dec;
-    time_t t = std::chrono::system_clock::to_time_t(tot.time());
+    time_t t = tot.time.to_time_t();
     char tmpbuf[100];
     std::strftime(tmpbuf, sizeof(tmpbuf), "%c %Z", std::localtime(&t));
     cout << "time : " << tmpbuf << endl;
