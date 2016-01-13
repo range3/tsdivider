@@ -2,6 +2,7 @@
 #define _TSSP_PAT_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
+#include "section.hpp"
 #include "pat.hpp"
 #include "filter/pmt_section_filter.hpp"
 
@@ -12,13 +13,16 @@ void pat_section_filter::do_handle_section(
       context& c,
       const char* section_buffer,
       size_t section_length) {
+  section s;
+  s.unpack(section_buffer, section_length);
   program_association_table pat;
-  pat.unpack(section_buffer, section_length);
+  s.convert<program_association_table>(pat);
 
   c.get_view().print(
       c.get_packet_num(),
+      s.header,
       pat,
-      last_version_ != pat.header.version);
+      last_version_ != s.header.version);
 
   {
     auto i = pat.program_num_to_pid.begin();
@@ -34,7 +38,7 @@ void pat_section_filter::do_handle_section(
     }
   }
 
-  last_version_ = pat.header.version;
+  last_version_ = s.header.version;
 }
 
 }

@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 
-#include "section_header.hpp"
 #include "util.hpp"
 #include "descriptor.hpp"
 
@@ -40,7 +39,6 @@ struct program_element
 
 struct program_map_table
 {
-  section_header header;
   uint16_t pcr_pid;
   std::vector<descriptor> program_info;
   std::vector<program_element> program_elements;
@@ -49,8 +47,6 @@ public:
   void unpack(const char* data, size_t size) {
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
     const uint8_t* pend = p+size;
-
-    header.unpack(&p, pend);
 
     pcr_pid = get16(p) & 0x1FFF;
     p += 2;

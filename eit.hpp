@@ -1,7 +1,6 @@
 #ifndef _TSSP_EIT_HPP_
 #define _TSSP_EIT_HPP_
 
-#include "section_header.hpp"
 #include "util.hpp"
 #include "descriptor.hpp"
 #include "aribtime.hpp"
@@ -22,7 +21,6 @@ struct event_information_table
     std::vector<descriptor> descriptors;
   };
 
-  section_header header;
   uint16_t transport_stream_id;
   uint16_t original_network_id;
   uint8_t segment_last_section_number;
@@ -34,8 +32,6 @@ struct event_information_table
     const uint8_t* pend = p+size;
 
     events.clear();
-
-    header.unpack(&p, pend);
 
     transport_stream_id = get16(p);
     p += 2;

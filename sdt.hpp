@@ -1,7 +1,6 @@
 #ifndef _TSSP_SDT_HPP_
 #define _TSSP_SDT_HPP_
 
-#include "section_header.hpp"
 #include "util.hpp"
 #include "descriptor.hpp"
 
@@ -18,7 +17,6 @@ struct service_description_table
   };
 
   // Table ID 0x42 (self stream) 0x46 (other stream)
-  section_header header;
   uint16_t original_network_id;
   std::vector<service> services;
 
@@ -27,8 +25,6 @@ struct service_description_table
     const uint8_t* pend = p+size;
 
     services.clear();
-
-    header.unpack(&p, pend);
 
     original_network_id = get16(p);
     p += 3;

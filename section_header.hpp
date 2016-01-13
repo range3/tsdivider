@@ -15,6 +15,7 @@ public:
   uint16_t section_length;
   uint16_t table_id_extension;
   uint8_t version;
+  uint8_t current_next_indicator;
   uint8_t section_number;
   uint8_t last_section_number;
 
@@ -43,6 +44,7 @@ public:
     table_id_extension = get16(p);
     p += 2;
     version = (get8(p) >> 1) & 0x1F;
+    current_next_indicator = get8(p) & 0x01;
     p += 1;
     section_number = get8(p);
     p += 1;
@@ -50,6 +52,13 @@ public:
     p += 1;
 
     *pp = p;
+  }
+
+  size_t get_payload_length() const {
+    if(section_syntax_indicator)
+      return section_length-5;
+    else
+      return section_length;
   }
 };
 

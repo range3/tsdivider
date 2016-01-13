@@ -22,6 +22,7 @@ class view
 {
 public:
   view() :
+    print_section_header_(false),
     print_pat_(false),
     print_pmt_(false),
     print_sdt_(false),
@@ -33,6 +34,9 @@ public:
 
   virtual ~view() {}
 
+  void set_print_section_header(bool p) {
+    print_section_header_ = p;
+  }
   void set_print_pat(bool p) {
     print_pat_ = p;
   }
@@ -57,56 +61,66 @@ public:
 
   void print(
       uint64_t packet_num,
+      const section_header& header,
       const program_association_table& pat,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
     if(print_pat_) {
       print_packet_num(packet_num);
+      print_section_header(header);
       on_print(pat);
     }
   }
   void print(
       uint64_t packet_num,
+      const section_header& header,
       const program_map_table& pmt,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
     if(print_pmt_) {
       print_packet_num(packet_num);
+      print_section_header(header);
       on_print(pmt);
     }
   }
   void print(
       uint64_t packet_num,
+      const section_header& header,
       const service_description_table& sdt,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
     if(print_sdt_) {
       print_packet_num(packet_num);
+      print_section_header(header);
       on_print(sdt);
     }
   }
   void print(
       uint64_t packet_num,
+      const section_header& header,
       const time_offset_table& tot,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
     if(print_tot_) {
       print_packet_num(packet_num);
+      print_section_header(header);
       on_print(tot);
     }
   }
   void print(
       uint64_t packet_num,
+      const section_header& header,
       const event_information_table& eit,
       bool changed = true) const {
     if(print_if_changed_ && !changed)
       return;
     if(print_eit_) {
       print_packet_num(packet_num);
+      print_section_header(header);
       on_print(eit);
     }
   }
@@ -117,11 +131,17 @@ private:
       on_print_packet_num(n);
   }
 
+  void print_section_header(const section_header& h) const {
+    if(print_section_header_)
+      on_print_section_header(h);
+  }
+
 protected:
   virtual void on_print_packet_num(uint64_t n) const {
     cout << std::dec << n << "\t";
   }
 
+  virtual void on_print_section_header(const section_header& header) const {}
   virtual void on_print(const program_association_table& pat) const {}
   virtual void on_print(const program_map_table& pmt) const {}
   virtual void on_print(const service_description_table& sdt) const {}
@@ -129,6 +149,7 @@ protected:
   virtual void on_print(const event_information_table& eit) const {}
 
 protected:
+  bool print_section_header_;
   bool print_pat_;
   bool print_pmt_;
   bool print_sdt_;
@@ -149,9 +170,12 @@ public:
   virtual ~json_view() {}
 
 protected:
+  virtual void on_print_section_header(const section_header& h) const {
+    cout << serialize_section_header(h).serialize(prettify_);
+  }
+
   virtual void on_print(const program_association_table& pat) const {
-    picojson::value root = serialize_section_header(pat.header);
-    picojson::object& o = root.get<picojson::object>();
+    picojson::object o;
     picojson::array program_num_to_pid;
 
     for(auto& kv : pat.program_num_to_pid) {
@@ -165,12 +189,11 @@ protected:
         "program_to_pid",
         picojson::value(program_num_to_pid));
 
-    cout << root.serialize(prettify_) << endl;
+    cout << picojson::value(o).serialize(prettify_) << endl;
   }
 
   virtual void on_print(const program_map_table& pmt) const {
-    picojson::value root = serialize_section_header(pmt.header);
-    picojson::object& o = root.get<picojson::object>();
+    picojson::object o;
     o.emplace(
         "pcr_pid",
         picojson::value(d(pmt.pcr_pid)));
@@ -199,13 +222,12 @@ protected:
     }
     o.emplace("program_elements", picojson::value(program_elements));
 
-    cout << root.serialize(prettify_) << endl;
+    cout << picojson::value(o).serialize(prettify_) << endl;
   }
 
   virtual void on_print(const service_description_table& sdt) const {
     char tmpbuf[4096];
-    picojson::value root = serialize_section_header(sdt.header);
-    picojson::object& o = root.get<picojson::object>();
+    picojson::object o;
     o.emplace(
         "orig_network_id",
         picojson::value(d(sdt.original_network_id)));
@@ -237,7 +259,7 @@ protected:
       services.emplace_back(picojson::value(sobj));
     }
     o.emplace("services", picojson::value(services));
-    cout << root.serialize(prettify_) << endl;
+    cout << picojson::value(o).serialize(prettify_) << endl;
   }
 
   virtual void on_print(const time_offset_table& tot) const {
@@ -252,16 +274,6 @@ protected:
 
   virtual void on_print(const event_information_table& eit) const {
     picojson::object rooto;
-    rooto.emplace(
-        "tid", picojson::value(d(eit.header.table_id)));
-    rooto.emplace(
-        "sid", picojson::value(d(eit.header.table_id_extension)));
-    rooto.emplace(
-        "version", picojson::value(d(eit.header.version)));
-    rooto.emplace(
-        "sec_num", picojson::value(d(eit.header.section_number)));
-    rooto.emplace(
-        "last_sec_num", picojson::value(d(eit.header.section_number)));
     rooto.emplace(
         "tsid", picojson::value(d(eit.transport_stream_id)));
     rooto.emplace(
@@ -363,9 +375,13 @@ public:
   virtual ~debug_view() {}
 
 protected:
+  virtual void on_print_section_header(const section_header& h) const {
+    cout << "-----section header-----" << endl;
+    dump_section_header(h);
+  }
+
   virtual void on_print(const program_association_table& pat) const {
     cout << "----- pat -----" << endl;
-    dump_section_header(pat.header);
     for(auto& kv : pat.program_num_to_pid) {
       cout << "[program : " << kv.first;
       cout << ", pid : " << kv.second << "]" << endl;
@@ -374,7 +390,6 @@ protected:
 
   virtual void on_print(const program_map_table& pmt) const {
     cout << "----- pmt -----" << endl;
-    dump_section_header(pmt.header);
     cout << "pcr_pid : " << (int)pmt.pcr_pid << endl;
     cout << "program_info(descriptor)" << endl;
     {
@@ -400,8 +415,6 @@ protected:
   virtual void on_print(const service_description_table& sdt) const {
     cout << "----SDT sectoin----" << endl;
     char tmpbuf[4096];
-    cout << "header : " << endl;
-    dump_section_header(sdt.header);
     cout << "services : " << endl;
     for(auto& s : sdt.services) {
       cout << "\t" << "service_id : " << (int)s.service_id << endl;

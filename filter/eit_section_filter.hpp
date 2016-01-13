@@ -1,6 +1,7 @@
 #ifndef _TSSP_EIT_SECTION_FILTER_HPP_
 #define _TSSP_EIT_SECTION_FILTER_HPP_
 
+#include "section_header.hpp"
 #include "eit.hpp"
 
 namespace tssp
@@ -29,6 +30,7 @@ protected:
 
 private:
   bool subtable_is_changed(
+    const section_header& header,
     const event_information_table& eit);
 
 private:

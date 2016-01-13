@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     ("json", "print information by json")
     ("json_prettify", "print information by prettify json")
     ("debug", "print information by debug view")
+    ("header", "print section header")
     ("pat", "print pat")
     ("pmt", "print pmt")
     ("sdt", "print sdt")
@@ -62,6 +63,7 @@ int main(int argc, char* argv[]) {
     view.reset(new tssp::debug_view());
   else
     view.reset(new tssp::view());
+  view->set_print_section_header(vm.count("header"));
   view->set_print_pat(vm.count("pat"));
   view->set_print_pmt(vm.count("pmt"));
   view->set_print_sdt(vm.count("sdt"));
