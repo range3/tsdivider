@@ -4,3 +4,4 @@
 #include "filter/pmt_section_filter.hpp"
 #include "filter/tot_section_filter.hpp"
 #include "filter/sdt_section_filter.hpp"
+#include "filter/eit_section_filter.hpp"

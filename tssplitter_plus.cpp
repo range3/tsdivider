@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
     ("pmt", "print pmt")
     ("sdt", "print sdt")
     ("tot", "print tot")
+    ("eit", "print eit")
     ("all", "print all information")
     ("print_if_changed", "print information if section version changed")
     ("packet_num", "print ts packet number")
@@ -52,10 +53,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if(vm.count("input")) {
-    cout << "input: " << vm["input"].as<string>() << endl;
-  }
-
   std::unique_ptr<tssp::view> view;
   if(vm.count("json"))
     view.reset(new tssp::json_view());
@@ -69,6 +66,7 @@ int main(int argc, char* argv[]) {
   view->set_print_pmt(vm.count("pmt"));
   view->set_print_sdt(vm.count("sdt"));
   view->set_print_tot(vm.count("tot"));
+  view->set_print_eit(vm.count("eit"));
   view->set_print_if_changed(vm.count("print_if_changed"));
   view->set_print_packet_num(vm.count("packet_num"));
 

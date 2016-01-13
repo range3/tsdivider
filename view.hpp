@@ -2,17 +2,18 @@
 #define _TSSP_VIEW_HPP_
 
 #include <iostream>
+#include <sstream>
 #include <chrono>
 #include <ctime>
 #include "picojson.h"
 #include "aribstr.h"
-
 #include "util.hpp"
 #include "section_header.hpp"
 #include "pat.hpp"
 #include "pmt.hpp"
 #include "sdt.hpp"
 #include "tot.hpp"
+#include "eit.hpp"
 
 namespace tssp
 {
@@ -25,6 +26,7 @@ public:
     print_pmt_(false),
     print_sdt_(false),
     print_tot_(false),
+    print_eit_(false),
     print_if_changed_(false),
     print_packet_num_(false)
   {}
@@ -42,6 +44,9 @@ public:
   }
   void set_print_tot(bool p) {
     print_tot_ = p;
+  }
+  void set_print_eit(bool p) {
+    print_eit_ = p;
   }
   void set_print_if_changed(bool p) {
     print_if_changed_ = p;
@@ -94,6 +99,17 @@ public:
       on_print(tot);
     }
   }
+  void print(
+      uint64_t packet_num,
+      const event_information_table& eit,
+      bool changed = true) const {
+    if(print_if_changed_ && !changed)
+      return;
+    if(print_eit_) {
+      print_packet_num(packet_num);
+      on_print(eit);
+    }
+  }
 
 private:
   void print_packet_num(uint64_t n) const {
@@ -110,12 +126,14 @@ protected:
   virtual void on_print(const program_map_table& pmt) const {}
   virtual void on_print(const service_description_table& sdt) const {}
   virtual void on_print(const time_offset_table& tot) const {}
+  virtual void on_print(const event_information_table& eit) const {}
 
 protected:
   bool print_pat_;
   bool print_pmt_;
   bool print_sdt_;
   bool print_tot_;
+  bool print_eit_;
   bool print_if_changed_;
   bool print_packet_num_;
 };
@@ -232,6 +250,83 @@ protected:
     cout << picojson::value(o).serialize(prettify_) << endl;
   }
 
+  virtual void on_print(const event_information_table& eit) const {
+    picojson::object rooto;
+    rooto.emplace(
+        "tid", picojson::value(d(eit.header.table_id)));
+    rooto.emplace(
+        "sid", picojson::value(d(eit.header.transport_stream_id)));
+    rooto.emplace(
+        "version", picojson::value(d(eit.header.version)));
+    rooto.emplace(
+        "sec_num", picojson::value(d(eit.header.section_number)));
+    rooto.emplace(
+        "last_sec_num", picojson::value(d(eit.header.section_number)));
+    rooto.emplace(
+        "tsid", picojson::value(d(eit.transport_stream_id)));
+    rooto.emplace(
+        "orig_network_id", picojson::value(d(eit.original_network_id)));
+    rooto.emplace(
+        "segment_last_sec_num", picojson::value(d(eit.segment_last_section_number)));
+    rooto.emplace(
+        "last_table_id", picojson::value(d(eit.last_table_id)));
+
+    std::ostringstream oss;
+    char tmpbuf[4096];
+    time_t t;
+    picojson::array events;
+    for(auto& e : eit.events) {
+      picojson::object eo;
+      eo.emplace("event_id", picojson::value(d(e.event_id)));
+      t = e.start_time.to_time_t();
+      std::strftime(tmpbuf, sizeof(tmpbuf), "%c %Z", std::localtime(&t));
+      eo.emplace("start_time", picojson::value(tmpbuf));
+      oss.str("");
+      oss
+        << static_cast<int>(e.duration.hour) << ':'
+        << static_cast<int>(e.duration.min) << ':'
+        << static_cast<int>(e.duration.sec);
+      eo.emplace(
+          "duration", picojson::value(oss.str()));
+      eo.emplace(
+          "running_status", picojson::value(d(e.running_status)));
+      eo.emplace(
+          "free_ca_mode", picojson::value(static_cast<bool>(e.free_ca_mode)));
+
+      picojson::array descriptors;
+      for(auto& desc : e.descriptors) {
+        picojson::object dobj;
+        dobj.emplace("tag", picojson::value(d(desc.tag)));
+        if(desc.tag == short_event_descriptor::TAG) {
+          auto sed = desc.as<short_event_descriptor>();
+          dobj.emplace(
+              "iso_639_language_code",
+              picojson::value(sed->iso_639_language_code));
+          AribToString(
+              tmpbuf,
+              sed->event_name.data(),
+              sed->event_name.size());
+          dobj.emplace(
+              "event_name",
+              picojson::value(tmpbuf));
+          AribToString(
+              tmpbuf,
+              sed->text.data(),
+              sed->text.size());
+          dobj.emplace(
+              "text",
+              picojson::value(tmpbuf));
+        }
+        descriptors.emplace_back(picojson::value(dobj));
+      }
+      eo.emplace("descriptors", picojson::value(descriptors));
+      events.emplace_back(picojson::value(eo));
+    }
+    rooto.emplace("events", picojson::value(events));
+
+    cout << picojson::value(rooto).serialize(prettify_) << endl;
+  }
+
 private:
   picojson::value serialize_section_header(
       const section_header& sh) const {
@@ -337,6 +432,10 @@ protected:
     char tmpbuf[100];
     std::strftime(tmpbuf, sizeof(tmpbuf), "%c %Z", std::localtime(&t));
     cout << "time : " << tmpbuf << endl;
+  }
+
+  virtual void on_print(const event_information_table& eit) const {
+    cout << "----- EIT section -----" << endl;
   }
 
 private:

@@ -51,6 +51,39 @@ private:
 
 };
 
+// BCD
+struct aribduration
+{
+  uint8_t hour;
+  uint8_t min;
+  uint8_t sec;
+public:
+  void unpack(const char* data, size_t size) {
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
+    unpack(&p, p+size);
+  }
+
+  void unpack(const uint8_t** pp, const uint8_t* pend) {
+    const uint8_t* p = *pp;
+    if(pend - p < 3)
+      std::runtime_error("");
+
+    hour = bcd_to_decimal(get8(p));
+    p += 1;
+    min = bcd_to_decimal(get8(p));
+    p += 1;
+    sec = bcd_to_decimal(get8(p));
+    p += 1;
+
+    *pp = p;
+  }
+
+private:
+  uint8_t bcd_to_decimal(uint8_t bcd) const {
+    return (bcd >> 4)*10 + (bcd & 0x0F);
+  }
+};
+
 }
 
 #endif
