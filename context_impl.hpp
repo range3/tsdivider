@@ -16,6 +16,15 @@ context::context(std::unique_ptr<view> view) :
       0x0011, std::unique_ptr<section_filter>(
         new sdt_section_filter()));
   open_section_filter(
+      0x0012, std::unique_ptr<section_filter>(
+        new eit_section_filter()));
+  open_section_filter(
+      0x0026, std::unique_ptr<section_filter>(
+        new eit_section_filter()));
+  open_section_filter(
+      0x0027, std::unique_ptr<section_filter>(
+        new eit_section_filter()));
+  open_section_filter(
       0x0014, std::unique_ptr<section_filter>(
         new tot_section_filter()));
 }

@@ -17,6 +17,7 @@ void eit_section_filter::do_handle_section(
   event_information_table eit;
   s.convert(eit);
 
+  if(s.header.table_id == 0x4E) //FIXME
   c.get_view().print(
       c.get_packet_num(),
       s.header,

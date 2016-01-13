@@ -9,7 +9,7 @@ namespace tssp
 class context;
 
 // Event Information Table (EIT) section
-// PID 0x0012
+// PID 0x0012, 0x0026, 0x0027
 // Table ID 0x4E (self stream)
 // Table ID 0x4F (other stream)
 // Table ID 0x50 - 0x5F (self stream, event schedule)
