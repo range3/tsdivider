@@ -25,7 +25,7 @@ void eit_section_filter::do_handle_section(
   if(eit.header.section_number == eit.header.last_section_number) {
     version_
       [eit.header.table_id]
-      [eit.header.transport_stream_id]
+      [eit.header.table_id_extension]
       [eit.transport_stream_id]
       [eit.original_network_id]
         = eit.header.version;
@@ -41,7 +41,7 @@ bool eit_section_filter::subtable_is_changed(
     return true;
 
   auto j = i->second.find(
-      eit.header.transport_stream_id);
+      eit.header.table_id_extension);
   if(j == i->second.end())
     return true;
 

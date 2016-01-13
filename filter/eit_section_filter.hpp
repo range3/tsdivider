@@ -33,7 +33,7 @@ private:
 
 private:
   std::map<uint8_t,         // table_id
-    std::map<uint16_t,      // service_id
+    std::map<uint16_t,      // table_id_extension
       std::map<uint16_t,    // transport_stream_id
         std::map<uint16_t,  // original_network_id
           int> > > >version_;

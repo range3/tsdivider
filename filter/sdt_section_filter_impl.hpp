@@ -18,9 +18,9 @@ void sdt_section_filter::do_handle_section(
       c.get_packet_num(),
       sdt,
       is_changed(
-        sdt.header.transport_stream_id,
+        sdt.header.table_id_extension,
         sdt.header.version));
-  tsid_to_last_version_[sdt.header.transport_stream_id] = 
+  tsid_to_last_version_[sdt.header.table_id_extension] = 
     sdt.header.version;
 }
 

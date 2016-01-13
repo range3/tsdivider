@@ -255,7 +255,7 @@ protected:
     rooto.emplace(
         "tid", picojson::value(d(eit.header.table_id)));
     rooto.emplace(
-        "sid", picojson::value(d(eit.header.transport_stream_id)));
+        "sid", picojson::value(d(eit.header.table_id_extension)));
     rooto.emplace(
         "version", picojson::value(d(eit.header.version)));
     rooto.emplace(
@@ -333,14 +333,16 @@ private:
     picojson::object o;
     o.emplace(
         "tid", picojson::value(d(sh.table_id)));
-    o.emplace(
-        "tsid", picojson::value(d(sh.transport_stream_id)));
-    o.emplace(
-        "version", picojson::value(d(sh.version)));
-    o.emplace(
-        "sec_num", picojson::value(d(sh.section_number)));
-    o.emplace(
-        "last_sec_num", picojson::value(d(sh.section_number)));
+    if(sh.section_syntax_indicator) {
+      o.emplace(
+          "tsid", picojson::value(d(sh.table_id_extension)));
+      o.emplace(
+          "version", picojson::value(d(sh.version)));
+      o.emplace(
+          "sec_num", picojson::value(d(sh.section_number)));
+      o.emplace(
+          "last_sec_num", picojson::value(d(sh.section_number)));
+    }
     return picojson::value(o);
   }
 
@@ -441,10 +443,12 @@ protected:
 private:
   void dump_section_header(const section_header& sh) const {
     cout << "table id : " << (int)sh.table_id << endl;
-    cout << "tranport stream id : " << (int)sh.transport_stream_id << endl;
-    cout << "version : " << (int)sh.version << endl;
-    cout << "section number : " << (int)sh.section_number << endl;
-    cout << "last section number : " << (int)sh.last_section_number << endl;
+    if(sh.section_syntax_indicator) {
+      cout << "table_id_extension : " << (int)sh.table_id_extension << endl;
+      cout << "version : " << (int)sh.version << endl;
+      cout << "section number : " << (int)sh.section_number << endl;
+      cout << "last section number : " << (int)sh.last_section_number << endl;
+    }
   }
 };
 
