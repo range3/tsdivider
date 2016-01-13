@@ -209,8 +209,8 @@ protected:
     picojson::array program_elements;
     for(auto& pe : pmt.program_elements) {
       picojson::object peo;
-      peo.emplace("type", picojson::value(d(pe.stream_type)));
-      peo.emplace("pid", picojson::value(d(pe.elementary_pid)));
+      peo.emplace("stream_type", picojson::value(d(pe.stream_type)));
+      peo.emplace("elementary_pid", picojson::value(d(pe.elementary_pid)));
       picojson::array es_info;
       for(auto& desc : pe.es_info) {
         picojson::object es_info_o;
@@ -229,19 +229,19 @@ protected:
     char tmpbuf[4096];
     picojson::object o;
     o.emplace(
-        "orig_network_id",
+        "original_network_id",
         picojson::value(d(sdt.original_network_id)));
 
     picojson::array services;
     for(auto& s : sdt.services) {
       picojson::object sobj;
-      sobj.emplace("sid", picojson::value(d(s.service_id)));
+      sobj.emplace("service_id", picojson::value(d(s.service_id)));
       picojson::array descriptors;
       for(auto& desc : s.descriptors) {
         if(desc.tag == service_descriptor::TAG) {
           auto sd = desc.as<service_descriptor>();
           picojson::object dobj;
-          dobj.emplace("type", picojson::value(d(sd->service_type)));
+          dobj.emplace("service_type", picojson::value(d(sd->service_type)));
           AribToString(
               tmpbuf,
               sd->service_provider_name.data(),
@@ -264,22 +264,21 @@ protected:
 
   virtual void on_print(const time_offset_table& tot) const {
     picojson::object o;
-    o.emplace("tid", picojson::value(d(tot.table_id)));
     time_t t = tot.time.to_time_t();
     char tmpbuf[100];
     std::strftime(tmpbuf, sizeof(tmpbuf), "%c %Z", std::localtime(&t));
-    o.emplace("time", picojson::value(tmpbuf));
+    o.emplace("jst_time", picojson::value(tmpbuf));
     cout << picojson::value(o).serialize(prettify_) << endl;
   }
 
   virtual void on_print(const event_information_table& eit) const {
     picojson::object rooto;
     rooto.emplace(
-        "tsid", picojson::value(d(eit.transport_stream_id)));
+        "transport_stream_id", picojson::value(d(eit.transport_stream_id)));
     rooto.emplace(
-        "orig_network_id", picojson::value(d(eit.original_network_id)));
+        "original_network_id", picojson::value(d(eit.original_network_id)));
     rooto.emplace(
-        "segment_last_sec_num", picojson::value(d(eit.segment_last_section_number)));
+        "segment_last_section_number", picojson::value(d(eit.segment_last_section_number)));
     rooto.emplace(
         "last_table_id", picojson::value(d(eit.last_table_id)));
 
@@ -344,16 +343,16 @@ private:
       const section_header& sh) const {
     picojson::object o;
     o.emplace(
-        "tid", picojson::value(d(sh.table_id)));
+        "table_id", picojson::value(d(sh.table_id)));
     if(sh.section_syntax_indicator) {
       o.emplace(
-          "tsid", picojson::value(d(sh.table_id_extension)));
+          "table_id_extension", picojson::value(d(sh.table_id_extension)));
       o.emplace(
           "version", picojson::value(d(sh.version)));
       o.emplace(
-          "sec_num", picojson::value(d(sh.section_number)));
+          "section_number", picojson::value(d(sh.section_number)));
       o.emplace(
-          "last_sec_num", picojson::value(d(sh.section_number)));
+          "last_section_number", picojson::value(d(sh.section_number)));
     }
     return picojson::value(o);
   }
