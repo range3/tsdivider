@@ -350,6 +350,8 @@ private:
       o.emplace(
           "version", picojson::value(d(sh.version)));
       o.emplace(
+          "current_next_indicator", picojson::value(d(sh.current_next_indicator)));
+      o.emplace(
           "section_number", picojson::value(d(sh.section_number)));
       o.emplace(
           "last_section_number", picojson::value(d(sh.section_number)));
@@ -458,6 +460,7 @@ private:
     if(sh.section_syntax_indicator) {
       cout << "table_id_extension : " << (int)sh.table_id_extension << endl;
       cout << "version : " << (int)sh.version << endl;
+      cout << "current_next_indicator : " << (int)sh.current_next_indicator << endl;
       cout << "section number : " << (int)sh.section_number << endl;
       cout << "last section number : " << (int)sh.last_section_number << endl;
     }
