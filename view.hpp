@@ -14,6 +14,7 @@
 #include "sdt.hpp"
 #include "tot.hpp"
 #include "eit.hpp"
+#include "descriptor.hpp"
 
 namespace tssp
 {
@@ -215,6 +216,10 @@ protected:
       for(auto& desc : pe.es_info) {
         picojson::object es_info_o;
         es_info_o.emplace("tag", picojson::value(d(desc.tag)));
+        if(desc.tag == stream_identifier_descriptor::TAG) {
+          auto sid = desc.as<stream_identifier_descriptor>();
+          es_info_o.emplace("component_tag", picojson::value(d(sid->component_tag)));
+        }
         es_info.emplace_back(picojson::value(es_info_o));
       }
       peo.emplace("es_info", picojson::value(es_info));
