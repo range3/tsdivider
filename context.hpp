@@ -15,6 +15,7 @@ namespace tssp {
 
 class filter;
 class section_filter;
+class pes_filter;
 
 class context
 {
@@ -26,6 +27,9 @@ public:
   void open_section_filter(
       uint16_t pid,
       std::unique_ptr<section_filter> f);
+  void open_pes_filter(
+      uint16_t pid,
+      std::unique_ptr<pes_filter> f);
 
   bool is_opened(uint16_t pid) const;
 

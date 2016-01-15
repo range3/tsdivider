@@ -15,7 +15,7 @@ public:
   virtual bool is_section_filter() const {
     return false;
   }
-  virtual void write_section_data(
+  virtual void write_data(
       context& c,
       const char* data,
       size_t size,

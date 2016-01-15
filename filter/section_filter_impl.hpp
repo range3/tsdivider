@@ -6,7 +6,7 @@
 namespace tssp
 {
 
-void section_filter::write_section_data(
+void section_filter::write_data(
     context& c,
     const char* data,
     size_t size,

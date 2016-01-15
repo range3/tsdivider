@@ -4,6 +4,7 @@
 #include "context.hpp"
 #include "section.hpp"
 #include "pmt.hpp"
+#include "filter/pes_filter.hpp"
 
 namespace tssp
 {
@@ -22,6 +23,20 @@ void pmt_section_filter::do_handle_section(
       s.header,
       pmt,
       last_version_ != s.header.version);
+
+  if(last_version_ != s.header.version) {
+    for(auto& pe : pmt.program_elements) {
+      if(pe.stream_type == 0x02) {
+        // video
+        if(!c.is_opened(pe.elementary_pid)) {
+          c.open_pes_filter(
+              pe.elementary_pid,
+              std::unique_ptr<pes_filter>(
+                new pes_filter()));
+        }
+      }
+    }
+  }
 
   last_version_ = s.header.version;
 }

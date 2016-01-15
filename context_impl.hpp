@@ -65,22 +65,27 @@ void context::handle_packet(const packet& p) {
 
       if(pf > 0 && ci_ok) {
         // write remaining section bytes
-        f->write_section_data(*this, pp, pf, false);
+        f->write_data(*this, pp, pf, false);
       }
 
       pp += pf;
       if(pp < p.end()) {
-        f->write_section_data(*this, pp, p.end() - pp, true);
+        f->write_data(*this, pp, p.end() - pp, true);
       }
     }
     else {
       if(ci_ok) {
-        f->write_section_data(*this, pp, p.end() - pp, false);
+        f->write_data(*this, pp, p.end() - pp, false);
       }
     }
   }
   else {
-    // not a section filter
+    // pes filter
+    f->write_data(
+        *this,
+        p.payload(),
+        p.end() - p.payload(),
+        p.payload_uint_start_indicator());
   }
 }
 
@@ -88,6 +93,19 @@ inline
 void context::open_section_filter(
     uint16_t pid,
     std::unique_ptr<section_filter> f) {
+  auto i = pids_.lower_bound(pid);
+  if(i != pids_.end() && !(pid < i->first)) {
+    return;
+  }
+  else {
+    pids_.emplace_hint(i, pid, std::move(f));
+  }
+}
+
+inline
+void context::open_pes_filter(
+    uint16_t pid,
+    std::unique_ptr<pes_filter> f) {
   auto i = pids_.lower_bound(pid);
   if(i != pids_.end() && !(pid < i->first)) {
     return;

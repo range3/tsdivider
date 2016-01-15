@@ -23,7 +23,7 @@ public:
     return true;
   }
 
-  virtual void write_section_data(
+  virtual void write_data(
       context& c,
       const char* data,
       size_t size,
