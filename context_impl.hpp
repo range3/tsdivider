@@ -30,52 +30,52 @@ context::context(std::unique_ptr<view> view) :
 }
 
 inline
-void context::handle_packet(const packet& p) {
+void context::handle_packet(const transport_packet& packet) {
   packet_counter_ += 1;
-  auto i_filter = pids_.find(p.pid());
+  auto i_filter = pids_.find(packet.pid);
   if(i_filter == pids_.end())
     return;
 
   // find a correspondent filter 
   auto& f = i_filter->second;
 
-  // DEBUG: hexdump
-  //if(p.pid() == 0x0014) {
-  //  cerr << "-----PID " << p.pid() << "-----" << endl;
-  //  p.hexdump();
-  //}
-
   // checking continuity
-  uint8_t expect_ci = p.has_payload() ? (f->last_ci()+1) & 0x0f : f->last_ci();
-  bool ci_ok =
-    p.pid() == 0x1FFF || // null packet PID
-                         // FIXME: discontinuity
-    expect_ci == p.continuity_index();
+  uint8_t expect_cc;
+  if(packet.has_payload())
+    expect_cc = (f->last_ci()+1) & 0x0f;
+  else
+    expect_cc = f->last_ci();
 
-  f->set_last_ci(p.continuity_index());
+  bool cc_ok =
+    packet.pid == 0x1FFF || // null packet PID
+                            // FIXME: discontinuity
+    expect_cc == packet.continuity_counter;
+
+  f->set_last_ci(packet.continuity_counter);
 
   if(f->is_section_filter()) {
-    auto pp = p.payload();
-    if(p.payload_uint_start_indicator()) {
+    auto p = packet.payload;
+    auto pend = packet.payload + packet.payload_size();
+    if(packet.payload_unit_start_indicator) {
       // pointer field present
-      auto pf = p.pointer_field();
-      pp += 1;
-      if(pf > p.end() - pp)
+      auto pf = packet.pointer_field();
+      p += 1;
+      if(pf > pend - p)
         return;
 
-      if(pf > 0 && ci_ok) {
+      if(pf > 0 && cc_ok) {
         // write remaining section bytes
-        f->write_data(*this, pp, pf, false);
+        f->write_data(*this, p, pf, false);
       }
 
-      pp += pf;
-      if(pp < p.end()) {
-        f->write_data(*this, pp, p.end() - pp, true);
+      p += pf;
+      if(p < pend) {
+        f->write_data(*this, p, pend - p, true);
       }
     }
     else {
-      if(ci_ok) {
-        f->write_data(*this, pp, p.end() - pp, false);
+      if(cc_ok) {
+        f->write_data(*this, p, pend - p, false);
       }
     }
   }
@@ -83,9 +83,9 @@ void context::handle_packet(const packet& p) {
     // pes filter
     f->write_data(
         *this,
-        p.payload(),
-        p.end() - p.payload(),
-        p.payload_uint_start_indicator());
+        packet.payload,
+        packet.payload_size(),
+        packet.payload_unit_start_indicator);
   }
 }
 

@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
     input.exceptions(std::ifstream::failbit);
 
     tssp::tsreader reader(input);
-    tssp::packet packet;
+    tssp::transport_packet packet;
     tssp::context cxt(std::move(view));
     while(reader.next(packet)) {
       cxt.handle_packet(packet);

@@ -5,10 +5,10 @@
 #include <memory>
 #include <map>
 #include <string>
-#include "ts_reader.hpp"
 #include "util.hpp"
 #include "crc.hpp"
 
+#include "transport_packet.hpp"
 #include "view.hpp"
 
 namespace tssp {
@@ -22,7 +22,7 @@ class context
 public:
   context(std::unique_ptr<view> view);
 
-  void handle_packet(const packet& p);
+  void handle_packet(const transport_packet& p);
 
   void open_section_filter(
       uint16_t pid,
