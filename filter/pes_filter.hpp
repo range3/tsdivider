@@ -7,22 +7,28 @@
 namespace tssp
 {
 class context;
+class transport_packet;
 
 class pes_filter : public filter
 {
 public:
   virtual ~pes_filter() {}
 
-  virtual void write_data(
+  virtual void handle_packet(
+      context& c,
+      const transport_packet& packet);
+
+private:
+  void write_data(
       context& c,
       const char* data,
       size_t size,
       bool is_start);
 
-private:
   void handle_pes_header(
       context& c,
       const pes_header& h);
+
   void handle_pes_payload_stream(
       context& c,
       const pes_header& h,

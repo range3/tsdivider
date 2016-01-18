@@ -1,6 +1,8 @@
 #ifndef _TSSP_FILTER_HPP_
 #define _TSSP_FILTER_HPP_
 
+#include "transport_packet.hpp"
+
 namespace tssp
 {
 class context;
@@ -9,29 +11,33 @@ class filter
 {
 public:
   filter() :
-    last_ci_(0xf0)
+    last_cc_(0xf0)
   {}
   virtual ~filter() {}
   virtual bool is_section_filter() const {
     return false;
   }
-  virtual void write_data(
+  virtual void handle_packet(
       context& c,
-      const char* data,
-      size_t size,
-      bool is_start) = 0;
+      const transport_packet& packet) = 0;
 
+protected:
+  bool check_continuity(
+      const transport_packet& packet) const {
+    uint8_t expect_cc;
+    if(packet.has_payload())
+      expect_cc = (last_cc_+1) & 0x0f;
+    else
+      expect_cc = last_cc_;
 
-  uint8_t last_ci() const {
-    return last_ci_;
-  }
-
-  void set_last_ci(uint8_t ci) {
-    last_ci_ = ci;
+    return
+      packet.pid == 0x1FFF || // null packet PID
+                              // FIXME: discontinuity
+      expect_cc == packet.continuity_counter;
   }
 
 protected:
-  uint8_t last_ci_;
+  uint8_t last_cc_;
 };
 
 }

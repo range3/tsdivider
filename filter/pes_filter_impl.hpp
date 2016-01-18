@@ -3,10 +3,21 @@
 
 #include "context.hpp"
 #include "util.hpp"
+#include "transport_packet.hpp"
 #include "pes.hpp"
 
 namespace tssp
 {
+
+void pes_filter::handle_packet(
+    context& c,
+    const transport_packet& packet){
+  write_data(
+      c,
+      packet.payload,
+      packet.payload_size(),
+      packet.payload_unit_start_indicator);
+}
 
 void pes_filter::write_data(
     context& c,

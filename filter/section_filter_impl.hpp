@@ -2,9 +2,43 @@
 #define _TSSP_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
+#include "transport_packet.hpp"
 
 namespace tssp
 {
+
+void section_filter::handle_packet(
+    context& c,
+    const transport_packet& packet) {
+  auto p = packet.payload;
+  auto pend = p + packet.payload_size();
+  auto cc_ok = check_continuity(packet);
+
+  last_cc_ = packet.continuity_counter;
+
+  if(packet.payload_unit_start_indicator) {
+    // pointer field present
+    auto pf = packet.pointer_field();
+    p += 1;
+    if(pf > pend - p)
+      return;
+
+    if(pf > 0 && cc_ok) {
+      // write remaining section bytes
+      write_data(c, p, pf, false);
+    }
+
+    p += pf;
+    if(p < pend) {
+      write_data(c, p, pend - p, true);
+    }
+  }
+  else {
+    if(cc_ok) {
+      write_data(c, p, pend - p, false);
+    }
+  }
+}
 
 void section_filter::write_data(
     context& c,

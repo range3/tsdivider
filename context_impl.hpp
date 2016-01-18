@@ -31,62 +31,13 @@ context::context(std::unique_ptr<view> view) :
 
 inline
 void context::handle_packet(const transport_packet& packet) {
-  packet_counter_ += 1;
   auto i_filter = pids_.find(packet.pid);
-  if(i_filter == pids_.end())
-    return;
-
-  // find a correspondent filter 
-  auto& f = i_filter->second;
-
-  // checking continuity
-  uint8_t expect_cc;
-  if(packet.has_payload())
-    expect_cc = (f->last_ci()+1) & 0x0f;
-  else
-    expect_cc = f->last_ci();
-
-  bool cc_ok =
-    packet.pid == 0x1FFF || // null packet PID
-                            // FIXME: discontinuity
-    expect_cc == packet.continuity_counter;
-
-  f->set_last_ci(packet.continuity_counter);
-
-  if(f->is_section_filter()) {
-    auto p = packet.payload;
-    auto pend = packet.payload + packet.payload_size();
-    if(packet.payload_unit_start_indicator) {
-      // pointer field present
-      auto pf = packet.pointer_field();
-      p += 1;
-      if(pf > pend - p)
-        return;
-
-      if(pf > 0 && cc_ok) {
-        // write remaining section bytes
-        f->write_data(*this, p, pf, false);
-      }
-
-      p += pf;
-      if(p < pend) {
-        f->write_data(*this, p, pend - p, true);
-      }
-    }
-    else {
-      if(cc_ok) {
-        f->write_data(*this, p, pend - p, false);
-      }
-    }
+  if(i_filter != pids_.end()) {
+    // find a correspondent filter 
+    auto& f = i_filter->second;
+    f->handle_packet(*this, packet);
   }
-  else {
-    // pes filter
-    f->write_data(
-        *this,
-        packet.payload,
-        packet.payload_size(),
-        packet.payload_unit_start_indicator);
-  }
+  packet_counter_ += 1;
 }
 
 inline

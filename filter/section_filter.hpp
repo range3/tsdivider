@@ -1,9 +1,11 @@
 #ifndef _TSSP_SECTION_FILTER_HPP_
 #define _TSSP_SECTION_FILTER_HPP_
 
+
 namespace tssp
 {
 class context;
+class transport_packet;
 
 class section_filter : public filter
 {
@@ -23,7 +25,12 @@ public:
     return true;
   }
 
-  virtual void write_data(
+  virtual void handle_packet(
+      context& c,
+      const transport_packet& packet);
+
+private:
+  void write_data(
       context& c,
       const char* data,
       size_t size,
