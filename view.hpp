@@ -447,7 +447,6 @@ protected:
 
   virtual void on_print(const time_offset_table& tot) const {
     cout << "----- tot section -----" << endl;
-    cout << "table id : " << (int)tot.table_id << endl;
     cout << dec;
     time_t t = tot.time.to_time_t();
     char tmpbuf[100];

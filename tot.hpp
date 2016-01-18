@@ -9,9 +9,9 @@ namespace tssp
 {
 using std::chrono::system_clock;
 
+// TDT: 0x70, TOT: 0x73
 struct time_offset_table
 {
-  uint8_t table_id; // TDT: 0x70, TOT: 0x73
   aribtime time;
 
 public:
@@ -19,11 +19,9 @@ public:
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
     const uint8_t* pend = p+size;
 
-    if(size < 8)
+    if(size < 5)
       std::runtime_error("");
 
-    table_id = get8(p);
-    p += 3;
     time.unpack(&p, pend);
   }
 };
