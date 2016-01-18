@@ -2,6 +2,7 @@
 #define _TSSP_PES_FILTER_HPP_
 
 #include <string>
+#include "pes.hpp"
 
 namespace tssp
 {
@@ -17,8 +18,21 @@ public:
       const char* data,
       size_t size,
       bool is_start);
+
+private:
+  void handle_pes_header(
+      context& c,
+      const pes_header& h);
+  void handle_pes_payload_stream(
+      context& c,
+      const pes_header& h,
+      const char* data, size_t size);
+
 public:
-  std::string pes_buffer_;
+  std::string pes_header_buffer_;
+  pes_context pes_ctx_;
+  size_t offset_;
+  pes_header current_header_;
 };
 }
 
