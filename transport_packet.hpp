@@ -9,12 +9,80 @@ namespace tssp
 class transport_packet
 {
 public:
-struct adaptation_field  //FIXME: not impl yet
+struct adaptation_field
 {
   uint8_t length;
+  uint8_t header_block;
+  uint64_t pcr_base;
+  uint16_t pcr_extension;
+  std::string other_data_block; // FIXME: not parse yet
 
   adaptation_field() :
     length(0) {}
+
+  uint8_t discontinuity_indicator() const {
+    return header_block & 0x80;
+  }
+
+  uint8_t random_access_indicator() const {
+    return header_block & 0x40;
+  }
+
+  uint8_t elementary_stream_priority_indicator() const {
+    return header_block & 0x20;
+  }
+
+  uint8_t pcr_flag() const {
+    return header_block & 0x10;
+  }
+
+  uint8_t opcr_flag() const {
+    return header_block & 0x08;
+  }
+
+  uint8_t splicing_point_flag() const {
+    return header_block & 0x04;
+  }
+
+  uint8_t transport_private_data_flag() const {
+    return header_block & 0x02;
+  }
+
+  uint8_t adaptation_field_extension_flag() const {
+    return header_block & 0x01;
+  }
+
+  void unpack(const uint8_t** pp, const uint8_t* pend) {
+    const uint8_t* p = *pp;
+
+    if(pend - p < 1)
+      std::runtime_error("");
+
+    length = get8(p);
+    p += 1;
+
+    if(length > 0) {
+      const uint8_t* pafield_end = p + length;
+      header_block = get8(p);
+      p += 1;
+
+      if(pcr_flag()) {
+        pcr_base = (get32(p) << 1) | (get8(p+4) >> 7);
+        p += 4;
+        pcr_extension = ((get8(p) & 0x01) << 8) | get8(p+1);
+        p += 2;
+      }
+
+      //FIXME: skip parsing other params
+      other_data_block.assign(
+          reinterpret_cast<const char*>(p),
+          pafield_end - p);
+
+      p = pafield_end;
+    }
+
+    *pp = p;
+  }
 };
 
 public:
