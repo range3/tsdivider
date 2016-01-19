@@ -67,6 +67,18 @@ void context::open_pes_filter(
 }
 
 inline
+void context::open_pcr_filter(uint16_t pid) {
+  auto i = pids_.lower_bound(pid);
+  if(i != pids_.end() && !(pid < i->first)) {
+    return;
+  }
+  else {
+    pids_.emplace_hint(
+        i, pid, std::unique_ptr<pcr_filter>(new pcr_filter()));
+  }
+}
+
+inline
 bool context::is_opened(uint16_t pid) const {
   return pids_.count(pid);
 }

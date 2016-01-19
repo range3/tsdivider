@@ -6,3 +6,4 @@
 #include "filter/sdt_section_filter.hpp"
 #include "filter/eit_section_filter.hpp"
 #include "filter/pes_filter.hpp"
+#include "filter/pcr_filter.hpp"

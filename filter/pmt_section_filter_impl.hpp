@@ -25,6 +25,10 @@ void pmt_section_filter::do_handle_section(
       last_version_ != s.header.version);
 
   if(last_version_ != s.header.version) {
+    if(!c.is_opened(pmt.pcr_pid)) {
+      c.open_pcr_filter(pmt.pcr_pid);
+    }
+
     for(auto& pe : pmt.program_elements) {
       if(pe.stream_type == 0x02) {
         // video

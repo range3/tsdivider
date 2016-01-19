@@ -30,6 +30,7 @@ public:
   void open_pes_filter(
       uint16_t pid,
       std::unique_ptr<pes_filter> f);
+  void open_pcr_filter(uint16_t pid);
 
   bool is_opened(uint16_t pid) const;
 
