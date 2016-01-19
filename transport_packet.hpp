@@ -121,8 +121,7 @@ public:
     continuity_counter = get8(p) & 0x0F;
     p += 1;
     if(has_adaptation_field()) {
-      afield.length = get8(p);
-      p += 1 + afield.length;
+      afield.unpack(&p, pend);
     }
     if(has_payload())
       payload = reinterpret_cast<const char*>(p);
