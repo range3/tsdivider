@@ -150,7 +150,12 @@ int AribToString(
 const DWORD AribToStringInternal(TCHAR *lpszDst, 
 								 const BYTE *pSrcData, const DWORD dwSrcLen)
 {
-	if(!pSrcData || !dwSrcLen || !lpszDst)return 0UL;
+	if(!pSrcData || !dwSrcLen) {
+    lpszDst[0] = TEXT('\0');
+    return 0UL;
+  }
+  if(!lpszDst)
+    return 0UL;
   
 	DWORD dwSrcPos = 0UL;
 	DWORD dwDstLen = 0UL;
