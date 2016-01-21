@@ -1,7 +1,9 @@
 #ifndef _TSSP_TRANSPORT_PACKET_HPP_
 #define _TSSP_TRANSPORT_PACKET_HPP_
 
+#include <bitset>
 #include "util.hpp"
+#include "packer.hpp"
 
 namespace tssp
 {
@@ -67,7 +69,9 @@ struct adaptation_field
       p += 1;
 
       if(pcr_flag()) {
-        pcr_base = (get32(p) << 1) | (get8(p+4) >> 7);
+        pcr_base =  get32(p);
+        pcr_base <<= 1;
+        pcr_base |= (get8(p+4) >> 7);
         p += 4;
         pcr_extension = ((get8(p) & 0x01) << 8) | get8(p+1);
         p += 2;
@@ -82,6 +86,28 @@ struct adaptation_field
     }
 
     *pp = p;
+  }
+
+  void pack(std::ostream& ost) const {
+    packer p(ost);
+    p.pack8(length);
+    if(length > 0) {
+      p.pack8(header_block);
+
+      if(pcr_flag()) {
+        p.pack32(pcr_base >> 1);
+        uint16_t pcr_block;
+        pcr_block  = (pcr_base & 0x01) << (16-1);
+        pcr_block |= 0x3F << (16-1-6);
+        pcr_block |= pcr_extension & 0x01FF;
+        p.pack16(pcr_block);
+      }
+
+      //FIXME: packing remains
+      p.pack_bytes(
+          other_data_block.data(),
+          other_data_block.size());
+    }
   }
 };
 
@@ -129,6 +155,34 @@ public:
       payload = nullptr;
 
     *pp = p;
+  }
+
+  void pack(std::ostream& ost) const {
+    packer p(ost);
+    size_t packed_size;
+    p.pack8(sync_byte);
+
+    std::bitset<16> head1(pid);
+    head1.set(15, transport_error_indicator);
+    head1.set(14, payload_unit_start_indicator);
+    head1.set(13, transport_priority);
+    p.pack16(head1.to_ulong());
+
+    uint8_t head2;
+    head2 = transport_scrambling_control << 6;
+    head2 |= adaptation_field_control << 4;
+    head2 |= continuity_counter;
+    p.pack8(head2);
+    packed_size = 4;
+    if(has_adaptation_field()) {
+      afield.pack(ost);
+      packed_size += 1 + afield.length;
+    }
+    if(has_payload()) {
+      p.pack_bytes(payload, payload_size());
+      packed_size += payload_size();
+    }
+    p.pack_fill(transport_packet::size - packed_size, 0xFF);
   }
 
   size_t pointer_field() const {
