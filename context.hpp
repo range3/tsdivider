@@ -72,6 +72,10 @@ private:
 public:
   boost::optional<program_association_table> pat;
   std::map<uint16_t, uint16_t> program_pcr;
+  boost::optional<uint64_t> first_pcr;
+  boost::optional<uint64_t> latest_pcr;
+  boost::optional<uint64_t> baseline_pcr;
+  boost::optional<time_t> baseline_time;
 };
 
 }

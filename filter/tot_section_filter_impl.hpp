@@ -22,6 +22,11 @@ void tot_section_filter::do_handle_section(
       c.get_packet_num(),
       s.header,
       tot);
+
+  if(!c.baseline_time && c.latest_pcr) {
+    c.baseline_time = tot.time.to_time_t();
+    c.baseline_pcr  = *c.latest_pcr;
+  }
 }
 
 }

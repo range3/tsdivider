@@ -25,6 +25,10 @@ void pcr_filter::handle_packet(
       }
     }
   }
+
+  c.latest_pcr = packet.afield.pcr_base;
+  if(!c.first_pcr)
+    c.first_pcr = packet.afield.pcr_base;
 }
 
 }

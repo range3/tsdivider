@@ -4,11 +4,13 @@
 #include <boost/program_options.hpp>
 using namespace std;
 namespace po = boost::program_options;
+#include "picojson.h"
 
 #include "ts_reader.hpp"
 #include "context.hpp"
 #include "view.hpp"
 #include "ts_trimmer.hpp"
+#include "wrap_around_time_stamp.hpp"
 
 
 bool checkProgramOptions(const po::variables_map& vm) {
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]) {
     ("trim_threshold", po::value<int64_t>()->default_value(5*60), "(sec)")
     ("overlap_front", po::value<int>()->default_value(1024), "(packet)")
     ("overlap_back", po::value<int>()->default_value(1024), "(packet)")
+    ("broadcast_time", "print broadcast time")
   ;
 
   po::variables_map vm;
@@ -103,6 +106,44 @@ int main(int argc, char* argv[]) {
 
     while(reader.next(packet)) {
       cxt.handle_packet(packet);
+    }
+
+    // print information
+    picojson::object root;
+    if(vm.count("broadcast_time")) {
+      picojson::object broadcast_time_o;
+      if(cxt.first_pcr &&
+         cxt.latest_pcr &&
+         cxt.baseline_pcr &&
+         cxt.baseline_time) {
+        tssp::wrap_around_time_stamp t0(*cxt.first_pcr);
+        tssp::wrap_around_time_stamp tb(*cxt.baseline_pcr);
+        tssp::wrap_around_time_stamp t1(*cxt.latest_pcr);
+        time_t broadcast_begin =
+          *cxt.baseline_time - ((tb - t0) / 90000);
+        time_t broadcast_end =
+          broadcast_begin + ((t1 - t0) / 90000);
+        char tmpbuf[100];
+        std::strftime(
+            tmpbuf,
+            sizeof(tmpbuf),
+            "%c %Z",
+            std::localtime(&broadcast_begin));
+        broadcast_time_o.emplace("begin", picojson::value(tmpbuf));
+        std::strftime(
+            tmpbuf,
+            sizeof(tmpbuf),
+            "%c %Z",
+            std::localtime(&broadcast_end));
+        broadcast_time_o.emplace("end", picojson::value(tmpbuf));
+        double duration = (t1 - t0) / 90000.0;
+        broadcast_time_o.emplace("duration", picojson::value(duration));
+      }
+      root.emplace(
+          "broadcast_time", picojson::value(broadcast_time_o));
+    }
+    if(!root.empty()) {
+      cout << picojson::value(root).serialize(true) << endl;
     }
   }
   catch(const std::ios_base::failure& e) {
