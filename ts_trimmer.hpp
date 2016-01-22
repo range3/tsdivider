@@ -21,20 +21,21 @@ class ts_trimmer
 public:
   ts_trimmer(
       std::ostream& ost,
-      int64_t trim_threshold_sec) :
+      int64_t trim_threshold_sec,
+      bool enable_pmt_separator,
+      bool enable_eit_separator,
+      int overlap_front,
+      int overlap_back) :
     output_(ost),
     buffer_(),
     context_(trim_threshold_sec),
     state_(state::buffering),
-    enable_pmt_separator_(true),
-    enable_eit_separator_(true) {}
-
-  void enable_pmt_separator(bool b) {
-    enable_pmt_separator_ = b;
-  }
-  void enable_eit_separator(bool b) {
-    enable_eit_separator_ = b;
-  }
+    enable_pmt_separator_(enable_pmt_separator),
+    enable_eit_separator_(enable_eit_separator),
+    overlap_front_(overlap_front),
+    overlap_back_(overlap_back),
+    written_overlap_back_(0)
+  {}
 
   void add_packet(const transport_packet& packet) {
     switch(state_) {
@@ -50,7 +51,13 @@ public:
       break;
     case state::buffering2:
       {
-        packet.pack(buffer_);
+        if(written_overlap_back_ < overlap_back_){
+          packet.pack(output_);
+          written_overlap_back_ += 1;
+        }
+        else {
+          packet.pack(buffer_);
+        }
       }
       break;
     case state::eof:
@@ -93,6 +100,7 @@ public:
         if(context_.get_state() ==
             splitter_context::state::writing){
           flush_buffer();
+          written_overlap_back_ = 0;
           state_ = state::writing;
         }
       }
@@ -108,7 +116,7 @@ public:
     switch(state_) {
     case state::buffering:
       {
-        drop_buffer();
+        drop_buffer(0);
         state_ = state::eof;
       }
       break;
@@ -119,7 +127,7 @@ public:
       break;
     case state::buffering2:
       {
-        drop_buffer();
+        drop_buffer(0);
         state_ = state::eof;
       }
       break;
@@ -136,7 +144,7 @@ private:
     case state::buffering:
       {
         context_.signal_split();
-        drop_buffer();
+        drop_buffer(overlap_front_*transport_packet::size);
       }
       break;
     case state::writing:
@@ -161,11 +169,25 @@ private:
         istreambuf_iterator<char>(buffer_),
         istreambuf_iterator<char>(),
         ostreambuf_iterator<char>(output_));
-    drop_buffer();
+    drop_buffer(0);
   }
 
-  void drop_buffer() {
-    buffer_.str(std::string());
+  void drop_buffer(int remain_bytes) {
+    std::string new_buffer;
+    if(remain_bytes > 0) {
+      buffer_.exceptions(std::ios_base::badbit);
+      buffer_.seekg(0, std::ios_base::end);
+      auto length = buffer_.tellg();
+      auto overlap_front =
+        std::min<decltype(length)>(
+            length,
+            remain_bytes);
+      buffer_.seekg(length - overlap_front, std::ios_base::beg);
+      new_buffer.resize(overlap_front);
+      buffer_.read(&*new_buffer.begin(), new_buffer.size());
+    }
+    buffer_.str(new_buffer);
+    buffer_.seekp(0, std::ios_base::end);
     buffer_.clear();
   }
 
@@ -176,6 +198,9 @@ private:
   state state_;
   bool enable_pmt_separator_;
   bool enable_eit_separator_;
+  int overlap_front_;
+  int overlap_back_;
+  int written_overlap_back_;
 };
 
 }

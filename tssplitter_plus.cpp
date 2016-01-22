@@ -40,7 +40,9 @@ int main(int argc, char* argv[]) {
     ("packet_num", "print ts packet number")
     ("enable_pmt_separator", po::value<bool>()->default_value(true), "")
     ("enable_eit_separator", po::value<bool>()->default_value(true), "")
-    ("trim_threshold", po::value<int64_t>()->default_value(5*60), "sec")
+    ("trim_threshold", po::value<int64_t>()->default_value(5*60), "(sec)")
+    ("overlap_front", po::value<int>()->default_value(1024), "(packet)")
+    ("overlap_back", po::value<int>()->default_value(1024), "(packet)")
   ;
 
   po::variables_map vm;
@@ -91,11 +93,11 @@ int main(int argc, char* argv[]) {
       std::unique_ptr<tssp::ts_trimmer> trimmer(
           new tssp::ts_trimmer(
             output,
-            vm["trim_threshold"].as<int64_t>()));
-      trimmer->enable_pmt_separator(
-          vm["enable_pmt_separator"].as<bool>());
-      trimmer->enable_eit_separator(
-          vm["enable_eit_separator"].as<bool>());
+            vm["trim_threshold"].as<int64_t>(),
+            vm["enable_pmt_separator"].as<bool>(),
+            vm["enable_eit_separator"].as<bool>(),
+            vm["overlap_front"].as<int>(),
+            vm["overlap_back"].as<int>()));
       cxt.set_ts_trimmer(std::move(trimmer));
     }
 
