@@ -31,12 +31,16 @@ context::context(std::unique_ptr<view> view) :
 
 inline
 void context::handle_packet(const transport_packet& packet) {
+  if(ts_trimmer_)
+    ts_trimmer_->add_packet(packet);
+
   auto i_filter = pids_.find(packet.pid);
   if(i_filter != pids_.end()) {
     // find a correspondent filter 
     auto& f = i_filter->second;
     f->handle_packet(*this, packet);
   }
+
   packet_counter_ += 1;
 }
 

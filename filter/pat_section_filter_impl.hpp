@@ -24,16 +24,18 @@ void pat_section_filter::do_handle_section(
       pat,
       last_version_ != s.header.version);
 
-  {
-    auto i = pat.program_num_to_pid.begin();
-    auto i_end = pat.program_num_to_pid.end();
-    for(; i != i_end; ++i) {
-      if(i->first != 0) {
-        if(!c.is_opened(i->second)) {
-          c.open_section_filter(
-              i->second, std::unique_ptr<section_filter>(
-                new pmt_section_filter()));
-        }
+  if(last_version_ == s.header.version)
+    return;
+
+  c.pat = pat;
+
+  for(auto& i : pat.association) {
+    if(i.program_number != 0) {
+      if(!c.is_opened(i.pmt_pid)) {
+        c.open_section_filter(
+            i.pmt_pid,
+            std::unique_ptr<section_filter>(
+              new pmt_section_filter()));
       }
     }
   }

@@ -24,23 +24,35 @@ void pmt_section_filter::do_handle_section(
       pmt,
       last_version_ != s.header.version);
 
-  if(last_version_ != s.header.version) {
-    if(!c.is_opened(pmt.pcr_pid)) {
-      c.open_pcr_filter(pmt.pcr_pid);
-    }
+  if(last_version_ == s.header.version)
+    return ;
 
-    for(auto& pe : pmt.program_elements) {
-      if(pe.stream_type == 0x02) {
-        // video
-        if(!c.is_opened(pe.elementary_pid)) {
-          c.open_pes_filter(
-              pe.elementary_pid,
-              std::unique_ptr<pes_filter>(
-                new pes_filter()));
-        }
+  if(!c.is_opened(pmt.pcr_pid)) {
+    c.open_pcr_filter(pmt.pcr_pid);
+  }
+
+  for(auto& i : c.pat->association) {
+    if(i.program_number != 0) {
+      if(i.program_number == s.header.table_id_extension) {
+        c.signal_pmt();
       }
+      break;
     }
   }
+
+  c.program_pcr[s.header.table_id_extension] = pmt.pcr_pid;
+
+  //for(auto& pe : pmt.program_elements) {
+  //  if(pe.stream_type == 0x02) {
+  //    // video
+  //    if(!c.is_opened(pe.elementary_pid)) {
+  //      c.open_pes_filter(
+  //          pe.elementary_pid,
+  //          std::unique_ptr<pes_filter>(
+  //            new pes_filter()));
+  //    }
+  //  }
+  //}
 
   last_version_ = s.header.version;
 }

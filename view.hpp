@@ -177,18 +177,21 @@ protected:
 
   virtual void on_print(const program_association_table& pat) const {
     picojson::object o;
-    picojson::array program_num_to_pid;
+    picojson::array association;
 
-    for(auto& kv : pat.program_num_to_pid) {
+    for(auto& i : pat.association) {
       picojson::object program_to_pid_obj;
-      program_to_pid_obj.emplace("program", picojson::value(d(kv.first)));
-      program_to_pid_obj.emplace("pid", picojson::value(d(kv.second)));
-      program_num_to_pid.emplace_back(picojson::value(program_to_pid_obj));
+      program_to_pid_obj.emplace(
+          "program_number", picojson::value(d(i.program_number)));
+      program_to_pid_obj.emplace(
+          "pmt_pid", picojson::value(d(i.pmt_pid)));
+      association.emplace_back(
+          picojson::value(program_to_pid_obj));
     }
 
     o.emplace(
-        "program_to_pid",
-        picojson::value(program_num_to_pid));
+        "association",
+        picojson::value(association));
 
     cout << picojson::value(o).serialize(prettify_) << endl;
   }
@@ -388,9 +391,9 @@ protected:
 
   virtual void on_print(const program_association_table& pat) const {
     cout << "----- pat -----" << endl;
-    for(auto& kv : pat.program_num_to_pid) {
-      cout << "[program : " << kv.first;
-      cout << ", pid : " << kv.second << "]" << endl;
+    for(auto& i : pat.association) {
+      cout << "[program : " << i.program_number;
+      cout << ", pid : " << i.pmt_pid << "]" << endl;
     }
   }
 

@@ -10,6 +10,9 @@
 
 #include "transport_packet.hpp"
 #include "view.hpp"
+#include "ts_trimmer.hpp"
+
+#include "boost/optional.hpp"
 
 namespace tssp {
 
@@ -40,14 +43,35 @@ public:
     return packet_counter_;
   }
 
+  void set_ts_trimmer(std::unique_ptr<ts_trimmer> t) {
+    ts_trimmer_ = std::move(t);
+  }
+  void signal_pcr(uint64_t pcr) {
+    if(ts_trimmer_)
+      ts_trimmer_->signal_pcr(pcr);
+  }
+  void signal_pmt() {
+    if(ts_trimmer_)
+      ts_trimmer_->signal_pmt();
+  }
+  void signal_eit() {
+    if(ts_trimmer_)
+      ts_trimmer_->signal_eit();
+  }
+
 private:
   std::map<
     uint16_t,
     std::unique_ptr<filter> > pids_;
 
   std::unique_ptr<view> view_;
+  std::unique_ptr<ts_trimmer> ts_trimmer_;
 
   uint64_t packet_counter_;
+
+public:
+  boost::optional<program_association_table> pat;
+  std::map<uint16_t, uint16_t> program_pcr;
 };
 
 }

@@ -11,7 +11,17 @@ namespace tssp
 class program_association_table
 {
 public:
-  std::map<uint16_t, uint16_t> program_num_to_pid;
+  struct association_pair
+  {
+    association_pair(uint16_t pnum, uint16_t pmt) :
+      program_number(pnum),
+      pmt_pid(pmt) {}
+
+    uint16_t program_number;
+    uint16_t pmt_pid;
+  };
+public:
+  std::vector<association_pair> association;
 
 public:
   program_association_table() {}
@@ -21,11 +31,9 @@ public:
     const uint8_t* pend = p+size;
 
     while(pend - p >= 4+4) {
-      uint16_t pnum = get16(p);
-      p += 2;
-      uint16_t pmt_pid = get16(p) & 0x1FFF;
-      p += 2;
-      program_num_to_pid[pnum] = pmt_pid;
+      association.push_back(
+          association_pair(get16(p), get16(p+2) & 0x1FFF));
+      p += 4;
     }
   }
 };

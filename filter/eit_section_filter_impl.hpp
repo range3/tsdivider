@@ -24,6 +24,13 @@ void eit_section_filter::do_handle_section(
       eit,
       subtable_is_changed(s.header, eit));
 
+  if(s.header.table_id == 0x4E &&
+     s.header.section_number == 0) {
+    if(subtable_is_changed(s.header, eit)){
+      c.signal_eit();
+    }
+  }
+
   // FIXME
   if(s.header.section_number == s.header.last_section_number) {
     version_

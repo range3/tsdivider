@@ -8,6 +8,7 @@ namespace po = boost::program_options;
 #include "ts_reader.hpp"
 #include "context.hpp"
 #include "view.hpp"
+#include "ts_trimmer.hpp"
 
 
 bool checkProgramOptions(const po::variables_map& vm) {
@@ -17,19 +18,15 @@ bool checkProgramOptions(const po::variables_map& vm) {
   if(!vm.count("input"))
     return false;
 
-  if(!vm.count("output"))
-    return false;
-
   return true;
 }
 
 int main(int argc, char* argv[]) {
-
   po::options_description desc("options");
   desc.add_options()
     ("help", "produce help message")
     ("input,i", po::value<string>(), "input file (REQUIRED)")
-    ("output,o", po::value<string>()->default_value("a.ts"), "output file")
+    ("output,o", po::value<string>(), "output file")
     ("json", "print information by json")
     ("json_prettify", "print information by prettify json")
     ("debug", "print information by debug view")
@@ -39,15 +36,16 @@ int main(int argc, char* argv[]) {
     ("sdt", "print sdt")
     ("tot", "print tot")
     ("eit", "print eit")
-    ("all", "print all information")
     ("print_if_changed", "print information if section version changed")
     ("packet_num", "print ts packet number")
+    ("enable_pmt_separator", po::value<bool>()->default_value(true), "")
+    ("enable_eit_separator", po::value<bool>()->default_value(true), "")
+    ("trim_threshold", po::value<int64_t>()->default_value(5*60), "sec")
   ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
-
 
   if(!checkProgramOptions(vm)) {
     cout << desc << endl;
@@ -81,6 +79,26 @@ int main(int argc, char* argv[]) {
     tssp::tsreader reader(input);
     tssp::transport_packet packet;
     tssp::context cxt(std::move(view));
+
+    std::ofstream output;
+    output.exceptions(
+        std::ofstream::failbit | std::ofstream::badbit);
+    if(vm.count("output")) {
+      output.open(
+          vm["output"].as<string>(),
+          std::ios::binary | std::ios::trunc);
+
+      std::unique_ptr<tssp::ts_trimmer> trimmer(
+          new tssp::ts_trimmer(
+            output,
+            vm["trim_threshold"].as<int64_t>()));
+      trimmer->enable_pmt_separator(
+          vm["enable_pmt_separator"].as<bool>());
+      trimmer->enable_eit_separator(
+          vm["enable_eit_separator"].as<bool>());
+      cxt.set_ts_trimmer(std::move(trimmer));
+    }
+
     while(reader.next(packet)) {
       cxt.handle_packet(packet);
     }
