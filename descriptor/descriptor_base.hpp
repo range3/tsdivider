@@ -26,10 +26,10 @@ struct descriptor
   }
 
   template<typename T>
-  std::unique_ptr<T> as() const {
-    std::unique_ptr<T> d(new T);
-    convert(*d);
-    return std::move(d);
+  T as() const {
+    T t;
+    convert(t);
+    return std::move(t);
   }
 
   template<typename T>

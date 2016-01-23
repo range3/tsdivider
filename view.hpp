@@ -221,7 +221,7 @@ protected:
         es_info_o.emplace("tag", picojson::value(d(desc.tag)));
         if(desc.tag == stream_identifier_descriptor::TAG) {
           auto sid = desc.as<stream_identifier_descriptor>();
-          es_info_o.emplace("component_tag", picojson::value(d(sid->component_tag)));
+          es_info_o.emplace("component_tag", picojson::value(d(sid.component_tag)));
         }
         es_info.emplace_back(picojson::value(es_info_o));
       }
@@ -249,16 +249,16 @@ protected:
         if(desc.tag == service_descriptor::TAG) {
           auto sd = desc.as<service_descriptor>();
           picojson::object dobj;
-          dobj.emplace("service_type", picojson::value(d(sd->service_type)));
+          dobj.emplace("service_type", picojson::value(d(sd.service_type)));
           AribToString(
               tmpbuf,
-              sd->service_provider_name.data(),
-              sd->service_provider_name.size());
+              sd.service_provider_name.data(),
+              sd.service_provider_name.size());
           dobj.emplace("provider_name", picojson::value(tmpbuf));
           AribToString(
               tmpbuf,
-              sd->service_name.data(),
-              sd->service_name.size());
+              sd.service_name.data(),
+              sd.service_name.size());
           dobj.emplace("service_name", picojson::value(tmpbuf));
           descriptors.emplace_back(picojson::value(dobj));
         }
@@ -320,18 +320,18 @@ protected:
           auto sed = desc.as<short_event_descriptor>();
           dobj.emplace(
               "iso_639_language_code",
-              picojson::value(sed->iso_639_language_code));
+              picojson::value(sed.iso_639_language_code));
           AribToString(
               tmpbuf,
-              sed->event_name.data(),
-              sed->event_name.size());
+              sed.event_name.data(),
+              sed.event_name.size());
           dobj.emplace(
               "event_name",
               picojson::value(tmpbuf));
           AribToString(
               tmpbuf,
-              sed->text.data(),
-              sed->text.size());
+              sed.text.data(),
+              sed.text.size());
           dobj.emplace(
               "text",
               picojson::value(tmpbuf));
@@ -432,16 +432,16 @@ protected:
         cout << "\t\t" << "length : " << (int)d.length << endl;
         if(d.tag == service_descriptor::TAG) {
           auto sd = d.as<service_descriptor>();
-          cout << "\t\t" << "service_type: " << (int)sd->service_type << endl;
+          cout << "\t\t" << "service_type: " << (int)sd.service_type << endl;
           AribToString(
               tmpbuf,
-              sd->service_provider_name.data(),
-              sd->service_provider_name.size());
+              sd.service_provider_name.data(),
+              sd.service_provider_name.size());
           cout << "\t\t" << "service_provider_name: " << tmpbuf << endl;
           AribToString(
               tmpbuf,
-              sd->service_name.data(),
-              sd->service_name.size());
+              sd.service_name.data(),
+              sd.service_name.size());
           cout << "\t\t" << "service_name: " << tmpbuf << endl;
         }
       }

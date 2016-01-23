@@ -17,15 +17,32 @@ void sdt_section_filter::do_handle_section(
   service_description_table sdt;
   s.convert(sdt);
 
+  bool changed = is_changed(s.header, sdt);
+
   c.get_view().print(
       c.get_packet_num(),
       s.header,
       sdt,
-      is_changed(
-        s.header.table_id_extension,
-        s.header.version));
-  tsid_to_last_version_[s.header.table_id_extension] = 
-    s.header.version;
+      changed);
+
+  if(changed) {
+    if(s.header.table_id == 0x42) {
+      c.latest_service_descriptors.clear();
+      for(auto& service : sdt.services) {
+        for(auto& d : service.descriptors) {
+          c.latest_service_descriptors.emplace(
+              service.service_id,
+              d.as<service_descriptor>());
+        }
+      }
+    }
+
+    version_[
+      std::make_tuple(
+          s.header.table_id,
+          s.header.table_id_extension,
+          sdt.original_network_id)] = s.header.version;
+  }
 }
 
 }

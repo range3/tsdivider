@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
     ("overlap_front", po::value<int>()->default_value(1024), "(packet)")
     ("overlap_back", po::value<int>()->default_value(1024), "(packet)")
     ("broadcast_time", "print broadcast time")
+    ("program_info", "print program information")
   ;
 
   po::variables_map vm;
@@ -104,12 +105,48 @@ int main(int argc, char* argv[]) {
       cxt.set_ts_trimmer(std::move(trimmer));
     }
 
+    picojson::object root;
+    bool print_program_info_latch = vm.count("program_info");
+
     while(reader.next(packet)) {
       cxt.handle_packet(packet);
+
+      if(print_program_info_latch) {
+        if(!cxt.latest_service_descriptors.empty()) {
+          picojson::array  program_info;
+          char tmpbuf[4096];
+
+          for(auto& kv : cxt.latest_service_descriptors) {
+            picojson::object sdo;
+            sdo.emplace(
+                "program_number",
+                picojson::value(static_cast<double>(kv.first)));
+            AribToString(
+                tmpbuf,
+                kv.second.service_name.data(),
+                kv.second.service_name.size());
+            sdo.emplace(
+                "service_name",
+                picojson::value(tmpbuf));
+            AribToString(
+                tmpbuf,
+                kv.second.service_provider_name.data(),
+                kv.second.service_provider_name.size());
+            sdo.emplace(
+                "service_provider",
+                picojson::value(tmpbuf));
+            program_info.emplace_back(std::move(sdo));
+          }
+
+          root.emplace(
+              "program_info",
+              picojson::value(program_info));
+          print_program_info_latch = false;
+        }
+      }
     }
 
     // print information
-    picojson::object root;
     if(vm.count("broadcast_time")) {
       picojson::object broadcast_time_o;
       if(cxt.first_pcr &&
