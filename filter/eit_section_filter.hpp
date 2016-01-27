@@ -1,10 +1,10 @@
-#ifndef _TSSP_EIT_SECTION_FILTER_HPP_
-#define _TSSP_EIT_SECTION_FILTER_HPP_
+#ifndef _TSD_EIT_SECTION_FILTER_HPP_
+#define _TSD_EIT_SECTION_FILTER_HPP_
 
 #include "section_header.hpp"
 #include "eit.hpp"
 
-namespace tssp
+namespace tsd
 {
 class context;
 

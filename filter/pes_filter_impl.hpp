@@ -1,12 +1,12 @@
-#ifndef _TSSP_PES_FILTER_IMPL_HPP_
-#define _TSSP_PES_FILTER_IMPL_HPP_
+#ifndef _TSD_PES_FILTER_IMPL_HPP_
+#define _TSD_PES_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "util.hpp"
 #include "transport_packet.hpp"
 #include "pes.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void pes_filter::handle_packet(

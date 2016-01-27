@@ -1,9 +1,9 @@
-#ifndef _TSSP_FILTER_HPP_
-#define _TSSP_FILTER_HPP_
+#ifndef _TSD_FILTER_HPP_
+#define _TSD_FILTER_HPP_
 
 #include "transport_packet.hpp"
 
-namespace tssp
+namespace tsd
 {
 class context;
 

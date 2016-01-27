@@ -1,5 +1,5 @@
-#ifndef _TSSP_TS_READER_HPP_
-#define _TSSP_TS_READER_HPP_
+#ifndef _TSD_TS_READER_HPP_
+#define _TSD_TS_READER_HPP_
 
 #include <iostream>
 #include <istream>
@@ -11,7 +11,7 @@
 #include "transport_packet.hpp"
 
 
-namespace tssp
+namespace tsd
 {
 class tsreader
 {
@@ -70,6 +70,6 @@ private:
   std::istream& input_;
 };
 
-} // namespace tssp
+} // namespace tsd
 
 #endif

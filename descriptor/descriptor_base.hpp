@@ -1,7 +1,7 @@
-#ifndef _TSSP_DESCRIPTOR_BASE_HPP_
-#define _TSSP_DESCRIPTOR_BASE_HPP_
+#ifndef _TSD_DESCRIPTOR_BASE_HPP_
+#define _TSD_DESCRIPTOR_BASE_HPP_
 
-namespace tssp
+namespace tsd
 {
 
 struct descriptor

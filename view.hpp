@@ -1,5 +1,5 @@
-#ifndef _TSSP_VIEW_HPP_
-#define _TSSP_VIEW_HPP_
+#ifndef _TSD_VIEW_HPP_
+#define _TSD_VIEW_HPP_
 
 #include <iostream>
 #include <sstream>
@@ -16,7 +16,7 @@
 #include "eit.hpp"
 #include "descriptor.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class view

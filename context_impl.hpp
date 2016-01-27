@@ -1,9 +1,9 @@
-#ifndef _TSSP_CONTEXT_IMPL_HPP_
-#define _TSSP_CONTEXT_IMPL_HPP_
+#ifndef _TSD_CONTEXT_IMPL_HPP_
+#define _TSD_CONTEXT_IMPL_HPP_
 
 #include "filter.hpp"
 
-namespace tssp {
+namespace tsd {
 
 context::context(std::unique_ptr<view> view) :
   view_(std::move(view)),

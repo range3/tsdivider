@@ -1,4 +1,5 @@
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-tssplitter_plus
+tsdivider
+config.h

@@ -1,7 +1,7 @@
-#ifndef _TSSP_PCR_FILTER_HPP_
-#define _TSSP_PCR_FILTER_HPP_
+#ifndef _TSD_PCR_FILTER_HPP_
+#define _TSD_PCR_FILTER_HPP_
 
-namespace tssp
+namespace tsd
 {
 class context;
 class transport_packet;

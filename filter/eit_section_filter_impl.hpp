@@ -1,11 +1,11 @@
-#ifndef _TSSP_EIT_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_EIT_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_EIT_SECTION_FILTER_IMPL_HPP_
+#define _TSD_EIT_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "section.hpp"
 #include "eit.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void eit_section_filter::do_handle_section(

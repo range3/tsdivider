@@ -1,10 +1,10 @@
-#ifndef _TSSP_SHORT_EVENT_DESCRIPTOR_
-#define _TSSP_SHORT_EVENT_DESCRIPTOR_
+#ifndef _TSD_SHORT_EVENT_DESCRIPTOR_
+#define _TSD_SHORT_EVENT_DESCRIPTOR_
 
 #include <string>
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class short_event_descriptor

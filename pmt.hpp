@@ -1,5 +1,5 @@
-#ifndef _TSSP_PMT_HPP_
-#define _TSSP_PMT_HPP_
+#ifndef _TSD_PMT_HPP_
+#define _TSD_PMT_HPP_
 
 #include <vector>
 #include <memory>
@@ -7,7 +7,7 @@
 #include "util.hpp"
 #include "descriptor.hpp"
 
-namespace tssp
+namespace tsd
 {
 struct program_element
 {

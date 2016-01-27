@@ -1,10 +1,10 @@
-#ifndef _TSSP_PES_FILTER_HPP_
-#define _TSSP_PES_FILTER_HPP_
+#ifndef _TSD_PES_FILTER_HPP_
+#define _TSD_PES_FILTER_HPP_
 
 #include <string>
 #include "pes.hpp"
 
-namespace tssp
+namespace tsd
 {
 class context;
 class transport_packet;

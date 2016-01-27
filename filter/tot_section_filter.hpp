@@ -1,7 +1,7 @@
-#ifndef _TSSP_TOT_SECTION_FILTER_HPP_
-#define _TSSP_TOT_SECTION_FILTER_HPP_
+#ifndef _TSD_TOT_SECTION_FILTER_HPP_
+#define _TSD_TOT_SECTION_FILTER_HPP_
 
-namespace tssp
+namespace tsd
 {
 class context;
 

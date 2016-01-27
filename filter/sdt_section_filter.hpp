@@ -1,9 +1,9 @@
-#ifndef _TSSP_SDT_SECTION_FILTER_HPP_
-#define _TSSP_SDT_SECTION_FILTER_HPP_
+#ifndef _TSD_SDT_SECTION_FILTER_HPP_
+#define _TSD_SDT_SECTION_FILTER_HPP_
 
 #include <tuple>
 
-namespace tssp
+namespace tsd
 {
 class context;
 

@@ -1,10 +1,10 @@
-#ifndef _TSSP_ARIBTIME_HPP_
-#define _TSSP_ARIBTIME_HPP_
+#ifndef _TSD_ARIBTIME_HPP_
+#define _TSD_ARIBTIME_HPP_
 
 #include <chrono>
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 using std::chrono::system_clock;
 

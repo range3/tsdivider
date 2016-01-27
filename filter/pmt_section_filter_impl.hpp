@@ -1,12 +1,12 @@
-#ifndef _TSSP_PMT_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_PMT_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_PMT_SECTION_FILTER_IMPL_HPP_
+#define _TSD_PMT_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "section.hpp"
 #include "pmt.hpp"
 #include "filter/pes_filter.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void pmt_section_filter::do_handle_section(

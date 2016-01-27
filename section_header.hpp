@@ -1,10 +1,10 @@
-#ifndef _TSSP_SECTION_HEADER_HPP_
-#define _TSSP_SECTION_HEADER_HPP_
+#ifndef _TSD_SECTION_HEADER_HPP_
+#define _TSD_SECTION_HEADER_HPP_
 
 #include <cstdint>
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class section_header

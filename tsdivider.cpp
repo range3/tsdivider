@@ -58,15 +58,15 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::unique_ptr<tssp::view> view;
+  std::unique_ptr<tsd::view> view;
   if(vm.count("json"))
-    view.reset(new tssp::json_view());
+    view.reset(new tsd::json_view());
   else if(vm.count("json_prettify"))
-    view.reset(new tssp::json_view(true));
+    view.reset(new tsd::json_view(true));
   else if(vm.count("debug"))
-    view.reset(new tssp::debug_view());
+    view.reset(new tsd::debug_view());
   else
-    view.reset(new tssp::view());
+    view.reset(new tsd::view());
   view->set_print_section_header(vm.count("header"));
   view->set_print_pat(vm.count("pat"));
   view->set_print_pmt(vm.count("pmt"));
@@ -82,9 +82,9 @@ int main(int argc, char* argv[]) {
         std::ios::binary);
     input.exceptions(std::ifstream::failbit);
 
-    tssp::tsreader reader(input);
-    tssp::transport_packet packet;
-    tssp::context cxt(std::move(view));
+    tsd::tsreader reader(input);
+    tsd::transport_packet packet;
+    tsd::context cxt(std::move(view));
 
     std::ofstream output;
     output.exceptions(
@@ -94,8 +94,8 @@ int main(int argc, char* argv[]) {
           vm["output"].as<string>(),
           std::ios::binary | std::ios::trunc);
 
-      std::unique_ptr<tssp::ts_trimmer> trimmer(
-          new tssp::ts_trimmer(
+      std::unique_ptr<tsd::ts_trimmer> trimmer(
+          new tsd::ts_trimmer(
             output,
             vm["trim_threshold"].as<int64_t>(),
             vm["enable_pmt_separator"].as<bool>(),
@@ -153,9 +153,9 @@ int main(int argc, char* argv[]) {
          cxt.latest_pcr &&
          cxt.baseline_pcr &&
          cxt.baseline_time) {
-        tssp::wrap_around_time_stamp t0(*cxt.first_pcr);
-        tssp::wrap_around_time_stamp tb(*cxt.baseline_pcr);
-        tssp::wrap_around_time_stamp t1(*cxt.latest_pcr);
+        tsd::wrap_around_time_stamp t0(*cxt.first_pcr);
+        tsd::wrap_around_time_stamp tb(*cxt.baseline_pcr);
+        tsd::wrap_around_time_stamp t1(*cxt.latest_pcr);
         time_t broadcast_begin =
           *cxt.baseline_time - ((tb - t0) / 90000);
         time_t broadcast_end =

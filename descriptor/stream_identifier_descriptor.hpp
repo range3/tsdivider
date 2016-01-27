@@ -1,9 +1,9 @@
-#ifndef _TSSP_STREAM_IDENTIFIER_DESCRIPTOR_HPP_
-#define _TSSP_STREAM_IDENTIFIER_DESCRIPTOR_HPP_
+#ifndef _TSD_STREAM_IDENTIFIER_DESCRIPTOR_HPP_
+#define _TSD_STREAM_IDENTIFIER_DESCRIPTOR_HPP_
 
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class stream_identifier_descriptor

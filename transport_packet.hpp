@@ -1,11 +1,11 @@
-#ifndef _TSSP_TRANSPORT_PACKET_HPP_
-#define _TSSP_TRANSPORT_PACKET_HPP_
+#ifndef _TSD_TRANSPORT_PACKET_HPP_
+#define _TSD_TRANSPORT_PACKET_HPP_
 
 #include <bitset>
 #include "util.hpp"
 #include "packer.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class transport_packet

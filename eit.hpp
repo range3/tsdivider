@@ -1,11 +1,11 @@
-#ifndef _TSSP_EIT_HPP_
-#define _TSSP_EIT_HPP_
+#ifndef _TSD_EIT_HPP_
+#define _TSD_EIT_HPP_
 
 #include "util.hpp"
 #include "descriptor.hpp"
 #include "aribtime.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 

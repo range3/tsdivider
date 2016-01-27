@@ -1,12 +1,12 @@
-#ifndef _TSSP_TS_TRIMMER_HPP_
-#define _TSSP_TS_TRIMMER_HPP_
+#ifndef _TSD_TS_TRIMMER_HPP_
+#define _TSD_TS_TRIMMER_HPP_
 
 #include <ostream>
 #include <sstream>
 #include "splitter_context.hpp"
 #include "transport_packet.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class ts_trimmer

@@ -1,9 +1,9 @@
-#ifndef _TSSP_SPLITTER_CONTEXT_HPP_
-#define _TSSP_SPLITTER_CONTEXT_HPP_
+#ifndef _TSD_SPLITTER_CONTEXT_HPP_
+#define _TSD_SPLITTER_CONTEXT_HPP_
 
 #include "wrap_around_time_stamp.hpp"
 
-namespace tssp
+namespace tsd
 {
 class splitter_context
 {

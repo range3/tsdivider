@@ -1,12 +1,12 @@
-#ifndef _TSSP_PAT_HPP_
-#define _TSSP_PAT_HPP_
+#ifndef _TSD_PAT_HPP_
+#define _TSD_PAT_HPP_
 
 #include <cstdint>
 #include <map>
 
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 class program_association_table
 {

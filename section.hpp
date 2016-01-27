@@ -1,9 +1,9 @@
-#ifndef _TSSP_SECTION_HPP_
-#define _TSSP_SECTION_HPP_
+#ifndef _TSD_SECTION_HPP_
+#define _TSD_SECTION_HPP_
 
 #include "section_header.hpp"
 
-namespace tssp
+namespace tsd
 {
 class section
 {

@@ -1,11 +1,11 @@
-#ifndef _TSSP_UTIL_HPP_
-#define _TSSP_UTIL_HPP_
+#ifndef _TSD_UTIL_HPP_
+#define _TSD_UTIL_HPP_
 
 #include <cstdint>
 #include <ostream>
 #include <iomanip>
 
-namespace tssp
+namespace tsd
 {
 
 inline

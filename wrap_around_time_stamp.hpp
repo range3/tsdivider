@@ -1,8 +1,8 @@
-#ifndef _TSSP_WRAP_AROUND_TIME_STAMP_HPP
-#define _TSSP_WRAP_AROUND_TIME_STAMP_HPP
+#ifndef _TSD_WRAP_AROUND_TIME_STAMP_HPP
+#define _TSD_WRAP_AROUND_TIME_STAMP_HPP
 
 
-namespace tssp
+namespace tsd
 {
 class wrap_around_time_stamp
 {

@@ -1,8 +1,8 @@
-#ifndef _TSSP_SECTION_FILTER_HPP_
-#define _TSSP_SECTION_FILTER_HPP_
+#ifndef _TSD_SECTION_FILTER_HPP_
+#define _TSD_SECTION_FILTER_HPP_
 
 
-namespace tssp
+namespace tsd
 {
 class context;
 class transport_packet;

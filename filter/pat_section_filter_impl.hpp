@@ -1,12 +1,12 @@
-#ifndef _TSSP_PAT_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_PAT_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_PAT_SECTION_FILTER_IMPL_HPP_
+#define _TSD_PAT_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "section.hpp"
 #include "pat.hpp"
 #include "filter/pmt_section_filter.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void pat_section_filter::do_handle_section(

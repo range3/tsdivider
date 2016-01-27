@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(tssplitter_plus)
+project(tsdivider)
 set(serial "0.1.0")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/")
@@ -31,15 +31,15 @@ include_directories(
 )
 
 add_executable(
-  tssplitter_plus
-  tssplitter_plus.cpp
+  tsdivider
+  tsdivider.cpp
   aribstr.c
 )
 
 target_link_libraries(
-  tssplitter_plus
+  tsdivider
   ${Boost_LIBRARIES}
   ${ICONV_LIBRARIES}
 )
 
-install(TARGETS tssplitter_plus RUNTIME DESTINATION "bin")
+install(TARGETS tsdivider RUNTIME DESTINATION "bin")

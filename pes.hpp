@@ -1,9 +1,9 @@
-#ifndef _TSSP_PES_HPP_
-#define _TSSP_PES_HPP_
+#ifndef _TSD_PES_HPP_
+#define _TSD_PES_HPP_
 
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class pes_header

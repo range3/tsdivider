@@ -1,10 +1,10 @@
-#ifndef _TSSP_SERVICE_DESCRIPTOR_
-#define _TSSP_SERVICE_DESCRIPTOR_
+#ifndef _TSD_SERVICE_DESCRIPTOR_
+#define _TSD_SERVICE_DESCRIPTOR_
 
 #include <string>
 #include "util.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 class service_descriptor

@@ -1,10 +1,10 @@
-#ifndef _TSSP_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_SECTION_FILTER_IMPL_HPP_
+#define _TSD_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "transport_packet.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void section_filter::handle_packet(
@@ -85,7 +85,7 @@ void section_filter::handle_section(
     size_t section_length) {
   //DEBUG
   //cerr << "-----section dump-----" << endl;
-  //tssp::hexdump(section_buffer, section_length, std::cerr);
+  //tsd::hexdump(section_buffer, section_length, std::cerr);
   do_handle_section(c, section_buffer, section_length);
 }
 

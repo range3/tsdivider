@@ -1,11 +1,11 @@
-#ifndef _TSSP_SDT_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_SDT_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_SDT_SECTION_FILTER_IMPL_HPP_
+#define _TSD_SDT_SECTION_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "section.hpp"
 #include "sdt.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void sdt_section_filter::do_handle_section(

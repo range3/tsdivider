@@ -1,11 +1,11 @@
-#ifndef _TSSP_PCR_FILTER_IMPL_HPP_
-#define _TSSP_PCR_FILTER_IMPL_HPP_
+#ifndef _TSD_PCR_FILTER_IMPL_HPP_
+#define _TSD_PCR_FILTER_IMPL_HPP_
 
 #include "context.hpp"
 #include "transport_packet.hpp"
 
 
-namespace tssp
+namespace tsd
 {
 
 void pcr_filter::handle_packet(

@@ -1,5 +1,5 @@
-#ifndef _TSSP_CONTEXT_HPP_
-#define _TSSP_CONTEXT_HPP_
+#ifndef _TSD_CONTEXT_HPP_
+#define _TSD_CONTEXT_HPP_
 
 #include <iostream>
 #include <memory>
@@ -14,7 +14,7 @@
 
 #include "boost/optional.hpp"
 
-namespace tssp {
+namespace tsd {
 
 class filter;
 class section_filter;

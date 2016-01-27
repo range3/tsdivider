@@ -1,9 +1,9 @@
-#ifndef _TSSP_PACKER_HPP_
-#define _TSSP_PACKER_HPP_
+#ifndef _TSD_PACKER_HPP_
+#define _TSD_PACKER_HPP_
 
 #include <ostream>
 
-namespace tssp
+namespace tsd
 {
 class packer
 {

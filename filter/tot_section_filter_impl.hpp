@@ -1,12 +1,12 @@
-#ifndef _TSSP_TOT_SECTION_FILTER_IMPL_HPP_
-#define _TSSP_TOT_SECTION_FILTER_IMPL_HPP_
+#ifndef _TSD_TOT_SECTION_FILTER_IMPL_HPP_
+#define _TSD_TOT_SECTION_FILTER_IMPL_HPP_
 
 #include <chrono>
 #include "context.hpp"
 #include "section.hpp"
 #include "tot.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 void tot_section_filter::do_handle_section(

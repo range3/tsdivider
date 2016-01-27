@@ -1,10 +1,10 @@
-#ifndef _TSSP_SDT_HPP_
-#define _TSSP_SDT_HPP_
+#ifndef _TSD_SDT_HPP_
+#define _TSD_SDT_HPP_
 
 #include "util.hpp"
 #include "descriptor.hpp"
 
-namespace tssp
+namespace tsd
 {
 
 
