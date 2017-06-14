@@ -157,41 +157,78 @@ int main(int argc, char* argv[]) {
           print_tsid_latch = false;
         }
       }
+
+      if(!vm.count("output") &&
+         !print_program_info_latch &&
+         !print_tsid_latch) {
+        if(vm.count("broadcast_time")) {
+          if(cxt.first_pcr &&
+              cxt.latest_pcr &&
+              cxt.baseline_pcr &&
+              cxt.baseline_time) {
+            uint16_t current_pcr = *cxt.latest_pcr;
+            auto current_pos = reader.tellg();
+
+            reader.seekg(
+                -4092 * tsd::transport_packet::size,
+                std::ios_base::end);
+
+            while(reader.next(packet)) {
+              cxt.handle_packet(packet);
+            }
+
+            if(*cxt.latest_pcr != current_pcr)
+              break;
+            else {
+              reader.seekg(0, std::ios_base::beg);
+              cxt.clear();
+
+              while(reader.next(packet)) {
+                cxt.handle_packet(packet);
+              }
+            }
+          }
+        }
+        else {
+          break;
+        }
+      }
+    }
+
+    if(cxt.first_pcr &&
+        cxt.latest_pcr &&
+        cxt.baseline_pcr &&
+        cxt.baseline_time) {
+      picojson::object broadcast_time_o;
+      tsd::wrap_around_time_stamp t0(*cxt.first_pcr);
+      tsd::wrap_around_time_stamp tb(*cxt.baseline_pcr);
+      tsd::wrap_around_time_stamp t1(*cxt.latest_pcr);
+      time_t broadcast_begin =
+        *cxt.baseline_time - ((tb - t0) / 90000);
+      time_t broadcast_end =
+        broadcast_begin + ((t1 - t0) / 90000);
+      char tmpbuf[100];
+      std::strftime(
+          tmpbuf,
+          sizeof(tmpbuf),
+          "%c %Z",
+          std::localtime(&broadcast_begin));
+      broadcast_time_o.emplace("begin", picojson::value(tmpbuf));
+      std::strftime(
+          tmpbuf,
+          sizeof(tmpbuf),
+          "%c %Z",
+          std::localtime(&broadcast_end));
+      broadcast_time_o.emplace("end", picojson::value(tmpbuf));
+      double duration = (t1 - t0) / 90000.0;
+      broadcast_time_o.emplace("duration", picojson::value(duration));
+
+      root.emplace(
+          "broadcast_time",
+          picojson::value(broadcast_time_o));
     }
 
     // print information
-    if(vm.count("broadcast_time")) {
-      picojson::object broadcast_time_o;
-      if(cxt.first_pcr &&
-         cxt.latest_pcr &&
-         cxt.baseline_pcr &&
-         cxt.baseline_time) {
-        tsd::wrap_around_time_stamp t0(*cxt.first_pcr);
-        tsd::wrap_around_time_stamp tb(*cxt.baseline_pcr);
-        tsd::wrap_around_time_stamp t1(*cxt.latest_pcr);
-        time_t broadcast_begin =
-          *cxt.baseline_time - ((tb - t0) / 90000);
-        time_t broadcast_end =
-          broadcast_begin + ((t1 - t0) / 90000);
-        char tmpbuf[100];
-        std::strftime(
-            tmpbuf,
-            sizeof(tmpbuf),
-            "%c %Z",
-            std::localtime(&broadcast_begin));
-        broadcast_time_o.emplace("begin", picojson::value(tmpbuf));
-        std::strftime(
-            tmpbuf,
-            sizeof(tmpbuf),
-            "%c %Z",
-            std::localtime(&broadcast_end));
-        broadcast_time_o.emplace("end", picojson::value(tmpbuf));
-        double duration = (t1 - t0) / 90000.0;
-        broadcast_time_o.emplace("duration", picojson::value(duration));
-      }
-      root.emplace(
-          "broadcast_time", picojson::value(broadcast_time_o));
-    }
     if(!root.empty()) {
       cout << picojson::value(root).serialize(static_cast<bool>(vm.count("prettify"))) << endl;
     }

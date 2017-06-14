@@ -25,6 +25,8 @@ class context
 public:
   context(std::unique_ptr<view> view);
 
+  void clear();
+
   void handle_packet(const transport_packet& p);
 
   void open_section_filter(
@@ -58,6 +60,9 @@ public:
     if(ts_trimmer_)
       ts_trimmer_->signal_eit();
   }
+
+private:
+  void set_initial_filters();
 
 private:
   std::map<

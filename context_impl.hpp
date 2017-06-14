@@ -9,6 +9,11 @@ context::context(std::unique_ptr<view> view) :
   view_(std::move(view)),
   packet_counter_(0)
 {
+  set_initial_filters();
+}
+
+inline
+void context::set_initial_filters() {
   open_section_filter(
       0x0000, std::unique_ptr<section_filter>(
         new pat_section_filter()));
@@ -27,6 +32,23 @@ context::context(std::unique_ptr<view> view) :
   open_section_filter(
       0x0014, std::unique_ptr<section_filter>(
         new tot_section_filter()));
+}
+
+inline
+void context::clear() {
+  pids_.clear();
+  ts_trimmer_.reset();
+  packet_counter_ = 0;
+  transport_stream_id = boost::none;
+  pat = boost::none;
+  program_pcr.clear();
+  first_pcr = boost::none;
+  latest_pcr = boost::none;
+  baseline_pcr = boost::none;
+  baseline_time = boost::none;
+  latest_service_descriptors.clear();
+
+  set_initial_filters();
 }
 
 inline

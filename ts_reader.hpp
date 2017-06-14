@@ -47,6 +47,18 @@ public:
     return true;
   }
 
+  std::streampos tellg() {
+    input_.exceptions(std::istream::failbit | std::istream::badbit);
+    return input_.tellg();
+  }
+
+  void seekg(
+      std::streamoff off,
+      std::ios_base::seekdir way) {
+    input_.exceptions(std::istream::failbit | std::istream::badbit);
+    input_.seekg(off, way);
+  }
+
 private:
   bool resync() {
     char ch;
