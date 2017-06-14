@@ -46,7 +46,8 @@ int main(int argc, char* argv[]) {
     ("overlap_front", po::value<int>()->default_value(1024), "(packet)")
     ("overlap_back", po::value<int>()->default_value(1024), "(packet)")
     ("broadcast_time", "print broadcast time")
-    ("program_info", "print program information")
+    ("program_info",   "print program information")
+    ("transport_stream_id", "print transport stream id")
   ;
 
   po::variables_map vm;
@@ -107,6 +108,7 @@ int main(int argc, char* argv[]) {
 
     picojson::object root;
     bool print_program_info_latch = vm.count("program_info");
+    bool print_tsid_latch = vm.count("transport_stream_id");
 
     while(reader.next(packet)) {
       cxt.handle_packet(packet);
@@ -142,6 +144,16 @@ int main(int argc, char* argv[]) {
               "program_info",
               picojson::value(program_info));
           print_program_info_latch = false;
+        }
+      }
+
+      if(print_tsid_latch) {
+        if(cxt.transport_stream_id) {
+          root.emplace(
+              "transport_stream_id",
+              picojson::value(
+                static_cast<double>(*cxt.transport_stream_id)));
+          print_tsid_latch = false;
         }
       }
     }

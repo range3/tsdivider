@@ -27,6 +27,7 @@ void pat_section_filter::do_handle_section(
   if(last_version_ == s.header.version)
     return;
 
+  c.transport_stream_id = s.header.table_id_extension;
   c.pat = pat;
 
   for(auto& i : pat.association) {

@@ -70,6 +70,7 @@ private:
   uint64_t packet_counter_;
 
 public:
+  boost::optional<uint16_t> transport_stream_id;
   boost::optional<program_association_table> pat;
   std::map<uint16_t, uint16_t> program_pcr;
   boost::optional<uint64_t> first_pcr;
