@@ -1,9 +1,9 @@
 TsDivider
 ====
 
-TsDividerは、Transport Stream(TS)ファイルを、EITとPMTに基づき分割するツールです。
+TsDividerは、Transport Stream(TS)ファイルの冒頭と末尾についている別番組をカットするツールです。
 
-その他に、放送開始/終了時間を表示する機能、サービス名表示機能があります。
+また、TSファイル内のメタデータ表示機能として、TSID表示機能、放送開始/終了時間を表示する機能、サービス名表示機能があります。
 
 # Usage
 
@@ -11,7 +11,10 @@ TsDividerは、Transport Stream(TS)ファイルを、EITとPMTに基づき分割
 ```bash
 $ tsdivider -i input.ts -o output.ts
 ```
-input.tsファイルをEITとPMTの位置で分割し、冒頭と末尾を切り落とした残りの区間をoutput.tsに出力します。
+input.tsファイルを冒頭/中央/末尾の3区間に分割し、中央の区間のみをoutput.tsに出力します。
+
+TSファイル内のEITとPMTが変更される位置に基づいて区間を決定しています。
+もし番組の途中でEITやPMTが変わっいても、変な位置で分割されないように、デフォルトでは300秒以上の区間は必ず残すように設定されています。
 
 ####詳細オプション
 * --enable_pmt_separator bool (=1)
@@ -27,7 +30,7 @@ input.tsファイルをEITとPMTの位置で分割し、冒頭と末尾を切り
 
 ## TSファイル情報表示
 ```bash
-$ tsdivider -i input.ts --broadcast_time --program_info
+$ tsdivider -i input.ts --broadcast_time --program_info --transport_stream_id --prettify
 ```
 #### 出力例
 ````
@@ -63,14 +66,17 @@ $ tsdivider -i input.ts --broadcast_time --program_info
       "service_name": "ＭＸワンセグ２",
       "service_provider": ""
     }
-  ]
+  ],
+  "transport_stream_id": 32391
 }
+
 ````
 
 # Install
 * Requirement
   * gcc -std=c++11
   * boost library
+  * libiconv
 
 ```bash
 $ cmake -DCMAKE_BUILD_TYPE=Release .
