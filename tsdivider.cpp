@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
     ("trim_threshold", po::value<int64_t>()->default_value(5*60), "(sec)")
     ("overlap_front", po::value<int>()->default_value(1024), "(packet)")
     ("overlap_back", po::value<int>()->default_value(1024), "(packet)")
+    ("prettify",       "prettify json")
     ("broadcast_time", "print broadcast time")
     ("program_info",   "print program information")
     ("transport_stream_id", "print transport stream id")
@@ -192,7 +193,7 @@ int main(int argc, char* argv[]) {
           "broadcast_time", picojson::value(broadcast_time_o));
     }
     if(!root.empty()) {
-      cout << picojson::value(root).serialize(true) << endl;
+      cout << picojson::value(root).serialize(static_cast<bool>(vm.count("prettify"))) << endl;
     }
   }
   catch(const std::ios_base::failure& e) {
