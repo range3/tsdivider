@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 # Boost
-find_package(Boost 1.60.0 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.60.0 REQUIRED COMPONENTS program_options filesystem system)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)

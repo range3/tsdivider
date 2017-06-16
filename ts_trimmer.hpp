@@ -21,13 +21,15 @@ class ts_trimmer
 public:
   ts_trimmer(
       std::ostream& ost,
+      std::iostream& buffer,
       int64_t trim_threshold_sec,
       bool enable_pmt_separator,
       bool enable_eit_separator,
       int overlap_front,
       int overlap_back) :
     output_(ost),
-    buffer_(),
+    buffer_(buffer),
+    input_pos_(0),
     context_(trim_threshold_sec),
     state_(state::buffering),
     enable_pmt_separator_(enable_pmt_separator),
@@ -165,35 +167,34 @@ private:
   }
   
   void flush_buffer() {
+    buffer_.exceptions(
+        std::ios_base::failbit | 
+        std::ios_base::badbit);
+    // because a joint file position is maintained by std::basic_filebuf
+    buffer_.seekg(input_pos_);
     std::copy(
         istreambuf_iterator<char>(buffer_),
         istreambuf_iterator<char>(),
         ostreambuf_iterator<char>(output_));
-    drop_buffer(0);
+    buffer_.clear(); // clear eofbit
+    input_pos_ = buffer_.tellg();
   }
 
-  void drop_buffer(int remain_bytes) {
-    std::string new_buffer;
-    if(remain_bytes > 0) {
-      buffer_.exceptions(std::ios_base::badbit);
-      buffer_.seekg(0, std::ios_base::end);
-      auto length = buffer_.tellg();
-      auto overlap_front =
-        std::min<decltype(length)>(
-            length,
-            remain_bytes);
-      buffer_.seekg(length - overlap_front, std::ios_base::beg);
-      new_buffer.resize(overlap_front);
-      buffer_.read(&*new_buffer.begin(), new_buffer.size());
-    }
-    buffer_.str(new_buffer);
-    buffer_.seekp(0, std::ios_base::end);
-    buffer_.clear();
+  void drop_buffer(size_t remain_bytes) {
+    buffer_.exceptions(
+        std::ios_base::failbit | 
+        std::ios_base::badbit);
+    auto end_of_buffer_pos = buffer_.tellp();
+    input_pos_ =
+      std::max<decltype(input_pos_)>(
+          end_of_buffer_pos - static_cast<std::iostream::off_type>(remain_bytes),
+          input_pos_);
   }
 
 private:
   std::ostream& output_;
-  std::stringstream buffer_;
+  std::iostream& buffer_;
+  std::iostream::pos_type input_pos_;
   splitter_context context_;
   state state_;
   bool enable_pmt_separator_;

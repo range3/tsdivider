@@ -1,9 +1,13 @@
+#define BOOST_SCOPE_EXIT_CONFIG_USE_LAMBDAS
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <boost/program_options.hpp>
+#include <boost/scope_exit.hpp>
+#include <boost/filesystem.hpp>
 using namespace std;
 namespace po = boost::program_options;
+namespace fs = boost::filesystem;
 #include "picojson.h"
 
 #include "ts_reader.hpp"
@@ -29,6 +33,7 @@ int main(int argc, char* argv[]) {
     ("help", "produce help message")
     ("input,i", po::value<string>(), "input file (REQUIRED)")
     ("output,o", po::value<string>(), "output file")
+    ("tmpbuf", po::value<string>(), "temporary buffer file (default: \"${--output}.tmpbuf\"")
     ("json", "print information by json")
     ("json_prettify", "print information by prettify json")
     ("debug", "print information by debug view")
@@ -82,7 +87,8 @@ int main(int argc, char* argv[]) {
     std::ifstream input(
         vm["input"].as<string>(),
         std::ios::binary);
-    input.exceptions(std::ifstream::failbit);
+    input.exceptions(
+        std::ios_base::failbit | std::ios_base::badbit);
 
     tsd::tsreader reader(input);
     tsd::transport_packet packet;
@@ -90,15 +96,50 @@ int main(int argc, char* argv[]) {
 
     std::ofstream output;
     output.exceptions(
-        std::ofstream::failbit | std::ofstream::badbit);
+        std::ios_base::failbit | std::ios_base::badbit);
+
+    std::fstream fbuffer;
+    fbuffer.exceptions(
+        std::ios_base::failbit | std::ios_base::badbit);
+    fs::path fbuffer_path;
+
+    BOOST_SCOPE_EXIT(&fbuffer, &fbuffer_path) {
+      if(!fbuffer_path.empty()) {
+        fbuffer.exceptions(std::ios_base::goodbit);
+        fbuffer.close();
+        try {
+          if(fs::exists(fbuffer_path))
+            fs::remove(fbuffer_path);
+        }
+        catch(fs::filesystem_error& e) {
+          cerr << e.what() << endl;
+        }
+      }
+    };
+
     if(vm.count("output")) {
       output.open(
           vm["output"].as<string>(),
           std::ios::binary | std::ios::trunc);
 
+      if(vm.count("tmpbuf")) {
+        fbuffer_path = (vm["tmpbuf"].as<string>());
+      }
+      else {
+        fbuffer_path =
+            std::string(vm["output"].as<string>()) + ".tmpbuf";
+      }
+      fbuffer.open(
+          fbuffer_path.string(),
+          std::ios_base::binary |
+          std::ios_base::trunc |
+          std::ios_base::in |
+          std::ios_base::out);
+
       std::unique_ptr<tsd::ts_trimmer> trimmer(
           new tsd::ts_trimmer(
             output,
+            fbuffer,
             vm["trim_threshold"].as<int64_t>(),
             vm["enable_pmt_separator"].as<bool>(),
             vm["enable_eit_separator"].as<bool>(),
