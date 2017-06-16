@@ -1,4 +1,5 @@
 #define BOOST_SCOPE_EXIT_CONFIG_USE_LAMBDAS
+#include "config.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -21,7 +22,7 @@ bool checkProgramOptions(const po::variables_map& vm) {
   if(vm.count("help"))
     return false;
 
-  if(!vm.count("input"))
+  if(!vm.count("input") && !vm.count("version"))
     return false;
 
   return true;
@@ -31,6 +32,7 @@ int main(int argc, char* argv[]) {
   po::options_description desc("options");
   desc.add_options()
     ("help", "produce help message")
+    ("version,v", "print version")
     ("input,i", po::value<string>(), "input file (REQUIRED)")
     ("output,o", po::value<string>(), "output file")
     ("tmpbuf", po::value<string>(), "temporary buffer file (default: \"${--output}.tmpbuf\"")
@@ -63,6 +65,11 @@ int main(int argc, char* argv[]) {
   if(!checkProgramOptions(vm)) {
     cout << desc << endl;
     return 1;
+  }
+
+  if(vm.count("version")) {
+    cout << "tsdivider version " << VERSION << endl;
+    return 0;
   }
 
   std::unique_ptr<tsd::view> view;
