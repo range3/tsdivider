@@ -46,7 +46,7 @@ void context::clear() {
   latest_pcr = boost::none;
   baseline_pcr = boost::none;
   baseline_time = boost::none;
-  latest_service_descriptors.clear();
+  service_descriptors.clear();
 
   set_initial_filters();
 }

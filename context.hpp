@@ -82,9 +82,9 @@ public:
   boost::optional<uint64_t> latest_pcr;
   boost::optional<uint64_t> baseline_pcr;
   boost::optional<time_t> baseline_time;
-  std::map<
+  std::vector<std::pair<
     uint16_t, // program_number
-    service_descriptor> latest_service_descriptors;
+    service_descriptor> > service_descriptors;
 };
 
 }

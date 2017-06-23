@@ -25,7 +25,11 @@ void eit_section_filter::do_handle_section(
       subtable_is_changed(s.header, eit));
 
   if(s.header.table_id == 0x4E &&
-     s.header.section_number == 0) {
+     s.header.section_number == 0 &&
+     !c.service_descriptors.empty() &&
+     c.service_descriptors[0].first == s.header.table_id_extension) {
+    // FIXME: currently, the semantics of tsdivider depends on
+    // the first service in the service description table
     if(subtable_is_changed(s.header, eit)){
       c.signal_eit();
     }

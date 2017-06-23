@@ -26,10 +26,10 @@ struct descriptor
   }
 
   template<typename T>
-  T as() const {
+  const T as() const {
     T t;
     convert(t);
-    return std::move(t);
+    return t;
   }
 
   template<typename T>

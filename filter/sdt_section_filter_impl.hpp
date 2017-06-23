@@ -27,12 +27,15 @@ void sdt_section_filter::do_handle_section(
 
   if(changed) {
     if(s.header.table_id == 0x42) {
-      c.latest_service_descriptors.clear();
+      c.service_descriptors.clear();
       for(auto& service : sdt.services) {
         for(auto& d : service.descriptors) {
-          c.latest_service_descriptors.emplace(
-              service.service_id,
-              d.as<service_descriptor>());
+          if(d.tag == 0x48) {
+            c.service_descriptors.push_back(
+                std::make_pair(
+                  service.service_id,
+                  d.as<service_descriptor>()));
+          }
         }
       }
     }

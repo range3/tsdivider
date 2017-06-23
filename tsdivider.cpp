@@ -166,11 +166,11 @@ int main(int argc, char* argv[]) {
       cxt.handle_packet(packet);
 
       if(print_program_info_latch) {
-        if(!cxt.latest_service_descriptors.empty()) {
+        if(!cxt.service_descriptors.empty()) {
           picojson::array  program_info;
           char tmpbuf[4096];
 
-          for(auto& kv : cxt.latest_service_descriptors) {
+          for(auto& kv : cxt.service_descriptors) {
             picojson::object sdo;
             sdo.emplace(
                 "program_number",
