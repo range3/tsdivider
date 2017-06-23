@@ -16,7 +16,7 @@ input.tsファイルを冒頭/中央/末尾の3区間に分割し、中央の区
 TSファイル内のEITとPMTが変更される位置に基づいて区間を決定しています。
 もし番組の途中でEITやPMTが変わっいても、変な位置で分割されないように、デフォルトでは300秒以上の区間は必ず残すように設定されています。
 
-####詳細オプション
+###詳細オプション
 * --enable_pmt_separator bool (=1)
   *  PMTの位置で分割します (デフォルトON)
 * --enable_eit_separator bool (=1)
@@ -32,7 +32,7 @@ TSファイル内のEITとPMTが変更される位置に基づいて区間を決
 ```bash
 $ tsdivider -i input.ts --broadcast_time --program_info --transport_stream_id --prettify
 ```
-#### 出力例
+### 出力例
 ````
 {
   "broadcast_time": {
