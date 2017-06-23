@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
+  bool view_flag = true;
   std::unique_ptr<tsd::view> view;
   if(vm.count("json"))
     view.reset(new tsd::json_view());
@@ -79,8 +80,10 @@ int main(int argc, char* argv[]) {
     view.reset(new tsd::json_view(true));
   else if(vm.count("debug"))
     view.reset(new tsd::debug_view());
-  else
+  else {
     view.reset(new tsd::view());
+    view_flag = false;
+  }
   view->set_print_section_header(vm.count("header"));
   view->set_print_pat(vm.count("pat"));
   view->set_print_pmt(vm.count("pmt"));
@@ -208,7 +211,8 @@ int main(int argc, char* argv[]) {
 
       if(!vm.count("output") &&
          !print_program_info_latch &&
-         !print_tsid_latch) {
+         !print_tsid_latch &&
+         !view_flag) {
         if(vm.count("broadcast_time")) {
           if(cxt.first_pcr &&
               cxt.latest_pcr &&
