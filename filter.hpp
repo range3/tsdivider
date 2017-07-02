@@ -5,5 +5,6 @@
 #include "filter/tot_section_filter.hpp"
 #include "filter/sdt_section_filter.hpp"
 #include "filter/eit_section_filter.hpp"
+#include "filter/cdt_section_filter.hpp"
 #include "filter/pes_filter.hpp"
 #include "filter/pcr_filter.hpp"

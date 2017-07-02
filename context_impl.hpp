@@ -32,6 +32,9 @@ void context::set_initial_filters() {
   open_section_filter(
       0x0014, std::unique_ptr<section_filter>(
         new tot_section_filter()));
+  open_section_filter(
+      0x0029, std::unique_ptr<section_filter>(
+        new cdt_section_filter()));
 }
 
 inline
