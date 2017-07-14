@@ -29,6 +29,9 @@ public:
 
   void handle_packet(const transport_packet& p);
 
+  void open_filter(
+      uint16_t pid,
+      std::unique_ptr<filter> f);
   void open_section_filter(
       uint16_t pid,
       std::unique_ptr<section_filter> f);

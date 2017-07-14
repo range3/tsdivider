@@ -70,9 +70,9 @@ void context::handle_packet(const transport_packet& packet) {
 }
 
 inline
-void context::open_section_filter(
+void context::open_filter(
     uint16_t pid,
-    std::unique_ptr<section_filter> f) {
+    std::unique_ptr<filter> f) {
   auto i = pids_.lower_bound(pid);
   if(i != pids_.end() && !(pid < i->first)) {
     return;
@@ -80,31 +80,27 @@ void context::open_section_filter(
   else {
     pids_.emplace_hint(i, pid, std::move(f));
   }
+}
+
+inline
+void context::open_section_filter(
+    uint16_t pid,
+    std::unique_ptr<section_filter> f) {
+  open_filter(pid, std::move(f));
 }
 
 inline
 void context::open_pes_filter(
     uint16_t pid,
     std::unique_ptr<pes_filter> f) {
-  auto i = pids_.lower_bound(pid);
-  if(i != pids_.end() && !(pid < i->first)) {
-    return;
-  }
-  else {
-    pids_.emplace_hint(i, pid, std::move(f));
-  }
+  open_filter(pid, std::move(f));
 }
 
 inline
 void context::open_pcr_filter(uint16_t pid) {
-  auto i = pids_.lower_bound(pid);
-  if(i != pids_.end() && !(pid < i->first)) {
-    return;
-  }
-  else {
-    pids_.emplace_hint(
-        i, pid, std::unique_ptr<pcr_filter>(new pcr_filter()));
-  }
+  open_filter(
+      pid,
+      std::unique_ptr<pcr_filter>(new pcr_filter()));
 }
 
 inline
