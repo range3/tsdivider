@@ -76,7 +76,6 @@ $ tsdivider -i input.ts --broadcast_time --program_info --transport_stream_id --
 * Requirement
   * gcc -std=c++11
   * boost library
-  * libiconv
 
 ```bash
 $ cmake -DCMAKE_BUILD_TYPE=Release .

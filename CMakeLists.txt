@@ -13,14 +13,6 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif(Boost_FOUND)
 
-# iconv
-find_package(Iconv REQUIRED)
-if(ICONV_FOUND)
-  include_directories(${ICONV_INCLUDE_DIR})
-  set(HAVE_ICONV_H 1)
-  set(ICONV_REQUIRES_CONST ${ICONV_SECOND_ARGUMENT_IS_CONST})
-endif(ICONV_FOUND)
-
 configure_file(
   ${CMAKE_SOURCE_DIR}/config.h.in
   ${CMAKE_SOURCE_DIR}/config.h
@@ -39,7 +31,6 @@ add_executable(
 target_link_libraries(
   tsdivider
   ${Boost_LIBRARIES}
-  ${ICONV_LIBRARIES}
 )
 
 install(TARGETS tsdivider RUNTIME DESTINATION "bin")
