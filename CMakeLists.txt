@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(tsdivider)
-set(serial "0.2.3")
+set(serial "0.3.0")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/")
 
