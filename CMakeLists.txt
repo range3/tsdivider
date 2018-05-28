@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(tsdivider)
 enable_language(C CXX)
-set(serial "0.3.0")
+set(serial "0.3.1")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/")
 
